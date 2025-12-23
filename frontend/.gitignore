@@ -22,3 +22,38 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+## IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+## NeoVIM
+.classpath
+.project
+.settings/
+
+# Os files
+## Linux
+# Temporary files
+*~
+
+## macOS
+# Files created by macOS Finder
+.DS_Store
+
+## Windows
+# Windows thumbnail cache files
+Thumbs.db
+
+# Folder config file
+[Dd]esktop.ini
+
+# Env files
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
