@@ -23,6 +23,18 @@
       <artifactId>javalin-bundle</artifactId>
       <version>6.7.0</version>
     </dependency>
+    <!-- JDBC connection pool -->
+    <dependency>
+      <groupId>com.zaxxer</groupId>
+      <artifactId>HikariCP</artifactId>
+      <version>7.0.2</version>
+    </dependency>
+    <!-- JDBC driver -->
+    <dependency>
+      <groupId>org.postgresql</groupId>
+      <artifactId>postgresql</artifactId>
+      <version>42.7.3</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -41,7 +53,7 @@
               <configuration>
                 <transformers>
                   <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                    <mainClass>ch.heigvd.Main</mainClass>
+                    <mainClass>ch.heigvd.App</mainClass>
                   </transformer>
                   <transformer implementation="org.apache.maven.plugins.shade.resource.DontIncludeResourceTransformer">
                     <resource>MANIFEST.MF</resource>
