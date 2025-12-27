@@ -4,7 +4,8 @@ import java.util.List;
 
 import javax.sql.DataSource;
 
-import ch.heigvd.NotFoundException;
+import io.javalin.http.HttpResponseException;
+import io.javalin.http.NotFoundResponse;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -37,7 +38,7 @@ public class UserService {
       User user = userRepo.getOne(conn, username);
 
       if (user == null) {
-        throw new NotFoundException("User \"" + username + "\" not found");
+        throw new NotFoundResponse("User \"" + username + "\" not found");
       }
 
       return user;
