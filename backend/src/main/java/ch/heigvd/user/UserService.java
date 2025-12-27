@@ -24,13 +24,15 @@ public class UserService {
    * Get all users from the database.
    * 
    * @return A list of all users.
+   * @throws NotFoundResponse if no users are found.
    */
   public List<User> getAllUsers() {
     try (Connection conn = ds.getConnection()) {
       List<User> users = userRepo.getAll(conn);
 
-      // If the list is empty, this is not a problem. The user can test this out by
-      // himself.
+      if (users.isEmpty()) {
+        throw new NotFoundResponse("No users found");
+      }
 
       return users;
 
