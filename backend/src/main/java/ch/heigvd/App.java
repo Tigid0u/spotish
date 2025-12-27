@@ -15,7 +15,10 @@ public class App {
 
     // handle general exceptions
     app.exception(Exception.class, (e, ctx) -> {
-      ctx.status(500).json(Map.of("error", "Internal error"));
+      // Expose the internal error message for debugging purposes
+      ctx.status(500).json(Map.of("error", e.getMessage()));
+      // Uncomment the following line to avoid exposing internal error messages
+      // ctx.status(500).json(Map.of("error", "Internal error"));
     });
 
     // Init a new DataSource pool using HikariCP
@@ -28,6 +31,7 @@ public class App {
     // Register routes
     app.get("/utilisateurs", userController::getAll);
     app.get("/utilisateurs/{nomUtilisateur}", userController::getOne);
+    app.post("/utilisateurs", userController::insertOne);
 
     app.start(PORT);
   }
