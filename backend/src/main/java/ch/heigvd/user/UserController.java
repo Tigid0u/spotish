@@ -43,6 +43,36 @@ public class UserController {
   public void insertOne(Context ctx) {
     User user = ctx.bodyAsClass(User.class);
 
+    // Validation
+    if (user.username() == null || user.username().isEmpty()) {
+      // 400 == Bad Request
+      ctx.status(400).result("username is required");
+      return;
+    } else if (user.lname() == null || user.lname().isEmpty()) {
+      // 400 == Bad Request
+      ctx.status(400).result("lname is required");
+      return;
+    } else if (user.fname() == null || user.fname().isEmpty()) {
+      // 400 == Bad Request
+      ctx.status(400).result("fname is required");
+      return;
+    } else if (user.birthdate() == null) {
+      // 400 == Bad Request
+      ctx.status(400).result("birthdate is required");
+      return;
+    } else if (user.fname().length() > 255) {
+      // 400 == Bad Request
+      ctx.status(400).result("fname is too long");
+      return;
+    } else if (user.lname().length() > 255) {
+      // 400 == Bad Request
+      ctx.status(400).result("lname is too long");
+      return;
+    } else if (user.email() != null && user.email().length() > 255) {
+      // 400 == Bad Request
+      ctx.status(400).result("email is too long");
+      return;
+    }
     userService.insertUser(user);
 
     // 201 == Created
