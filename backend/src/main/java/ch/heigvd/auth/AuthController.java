@@ -3,7 +3,6 @@ package ch.heigvd.auth;
 import ch.heigvd.user.UserService;
 import ch.heigvd.user.User;
 import io.javalin.http.Context;
-import io.javalin.http.Cookie;
 
 public class AuthController {
   private final UserService userService;
