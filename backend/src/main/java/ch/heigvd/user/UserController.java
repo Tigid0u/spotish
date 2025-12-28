@@ -41,38 +41,18 @@ public class UserController {
    * @param ctx Javalin context
    */
   public void insertOne(Context ctx) {
-    User user = ctx.bodyAsClass(User.class);
+    // Validate the body contents
+    User user = ctx.bodyValidator(User.class)
+        .check(u -> u.username() != null && !u.username().isEmpty(), "username is required")
+        .check(u -> u.lname() != null && !u.lname().isEmpty(), "lname is required")
+        .check(u -> u.fname() != null && !u.fname().isEmpty(), "fname is required")
+        .check(u -> u.birthdate() != null, "birthdate is required")
+        .check(u -> u.username() == null || u.username().length() <= 255, "username is too long")
+        .check(u -> u.fname() == null || u.fname().length() <= 255, "fname is too long")
+        .check(u -> u.lname() == null || u.lname().length() <= 255, "lname is too long")
+        .check(u -> u.email() == null || u.email().length() <= 255, "email is too long")
+        .get();
 
-    // Validation
-    if (user.username() == null || user.username().isEmpty()) {
-      // 400 == Bad Request
-      ctx.status(400).result("username is required");
-      return;
-    } else if (user.lname() == null || user.lname().isEmpty()) {
-      // 400 == Bad Request
-      ctx.status(400).result("lname is required");
-      return;
-    } else if (user.fname() == null || user.fname().isEmpty()) {
-      // 400 == Bad Request
-      ctx.status(400).result("fname is required");
-      return;
-    } else if (user.birthdate() == null) {
-      // 400 == Bad Request
-      ctx.status(400).result("birthdate is required");
-      return;
-    } else if (user.fname().length() > 255) {
-      // 400 == Bad Request
-      ctx.status(400).result("fname is too long");
-      return;
-    } else if (user.lname().length() > 255) {
-      // 400 == Bad Request
-      ctx.status(400).result("lname is too long");
-      return;
-    } else if (user.email() != null && user.email().length() > 255) {
-      // 400 == Bad Request
-      ctx.status(400).result("email is too long");
-      return;
-    }
     userService.insertUser(user);
 
     // 201 == Created
