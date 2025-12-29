@@ -11,6 +11,8 @@ import io.javalin.http.NotFoundResponse;
 import java.sql.Connection;
 import java.sql.SQLException;
 
+import ch.heigvd.entities.User;
+
 public class UserService {
   private final UserRepository userRepo;
   private final DataSource ds;
