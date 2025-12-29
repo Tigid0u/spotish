@@ -222,6 +222,7 @@ The response body contains a JSON object with the following properties:
 
 - `200` (OK) - The music has been found
 - `404` (Not Found) - The music does not exist
+- `400` (Bad Request) - The request is not correctly formatted
 
 #### Get all liked musics
 
@@ -467,7 +468,7 @@ The response body is empty.
 - `401` (Unauthorized) - The user is not logged in
 - `404` (Not Found) - The playlist or music does not exist
 
---- 
+---
 
 ### Artist
 
@@ -638,3 +639,4 @@ The response body is empty. The `user` cookie is deleted.
 ##### Status codes
 
 - `204` (No Content) - The user has been successfully logged out
+
