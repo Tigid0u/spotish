@@ -59,4 +59,18 @@ public class MusicService {
       throw new RuntimeException(e);
     }
   }
+
+  public List<Music> getTenMostListenedMusics(String username) {
+    try (Connection conn = ds.getConnection()) {
+      List<Music> musics = musicRepo.getTenMostListened(conn, username);
+
+      if (musics == null || musics.isEmpty()) {
+        throw new NotFoundResponse("No listened musics found for user \"" + username + "\"");
+      }
+
+      return musics;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

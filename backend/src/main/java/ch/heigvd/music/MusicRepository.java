@@ -23,13 +23,13 @@ public class MusicRepository {
     // Got the help of ChatGPT for the STRING_AGG part. This part allows to
     // concatenate the creator names in case of a featuring.
     String sql = """
-        select c.idchanson as musicId, m.titre as title, m.datedesortie as releaseDate, c.duree as duration, c.genre as genre,
+        SELECT c.idchanson as musicId, m.titre as title, m.datedesortie as releaseDate, c.duree as duration, c.genre as genre,
         STRING_AGG(DISTINCT cm.nomcreateur, ', ' ORDER BY cm.nomcreateur) AS creatorNames
-        from spotish.media m
-        inner join spotish.chanson c on m.idmedia = c.idchanson
-        inner join spotish.createur_media cm on m.idmedia = cm.idmedia
-        where m.idmedia = ?
-        group by c.idchanson, m.titre, m.datedesortie, c.duree, c.genre;
+        FROM spotish.media m
+        INNER JOIN spotish.chanson c ON m.idmedia = c.idchanson
+        INNER JOIN spotish.createur_media cm ON m.idmedia = cm.idmedia
+        WHERE m.idmedia = ?
+        GROUP BY c.idchanson, m.titre, m.datedesortie, c.duree, c.genre;
                         """;
     try (PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setLong(1, musicId); // Autoboxing
@@ -80,6 +80,42 @@ public class MusicRepository {
         ORDER BY ll.lastListenedAt DESC
         LIMIT 10;
             """;
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, username);
+      ResultSet rs = ps.executeQuery();
+
+      List<Music> musics = new ArrayList<>();
+      while (rs.next()) {
+        musics.add(new Music(
+            rs.getLong("musicId"),
+            rs.getString("title"),
+            rs.getObject("releaseDate", LocalDate.class),
+            rs.getInt("duration"),
+            rs.getString("genre"),
+            rs.getString("creatorNames")));
+      }
+      return musics;
+    }
+  }
+
+  public List<Music> getTenMostListened(Connection conn, String username) throws SQLException {
+    String sql = """
+        WITH most_listened_musics AS (SELECT e.idchanson, count(*) as nblistening
+                                      FROM spotish.ecoute e
+                                      WHERE e.nomutilisateur = ?
+                                      GROUP BY e.idchanson
+                                      ORDER BY count(e.idchanson) desc
+                                      LIMIT 10)
+        SELECT
+          c.idchanson AS musicId, m.titre AS title, m.datedesortie AS releaseDate, c.duree AS duration, c.genre AS genre,
+          STRING_AGG(DISTINCT cm.nomcreateur, ', ' ORDER BY cm.nomcreateur) AS creatorNames
+        FROM most_listened_musics mlm
+        JOIN spotish.chanson c         ON c.idchanson = mlm.idchanson
+        JOIN spotish.media m           ON m.idmedia = c.idchanson
+        JOIN spotish.createur_media cm ON cm.idmedia = m.idmedia
+        GROUP BY c.idchanson, m.titre, m.datedesortie, c.duree, c.genre, mlm.nblistening;
+                """;
+
     try (PreparedStatement ps = conn.prepareStatement(sql)) {
       ps.setString(1, username);
       ResultSet rs = ps.executeQuery();

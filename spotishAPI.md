@@ -180,13 +180,12 @@ The request body is empty. The current user is identified by the `user` cookie.
 
 The response body contains a JSON array with the following properties:
 
-- `nomUtilisateur` - The username of the user
-- `idMedia` - The ID of the music
-- `titre` - The title of the music
-- `dateDeSortie` - The release date of the music (format: YYYY-MM-DD)
-- `duree` - The duration of the music (in seconds)
+- `musicId` - The ID of the music
+- `title` - The title of the music
+- `releaseDate` - The release date of the music (format: YYYY-MM-DD)
+- `duration` - The duration of the music (in seconds)
 - `genre` - The genre of the music
-- `nomCreateur` - The name of the creator (artist or groupe) of the music
+- `creatorNames` - The name of the creators (artist or groupe) of the music. If multiple creators, they are separated by commas.
 
 ##### Status codes
 
