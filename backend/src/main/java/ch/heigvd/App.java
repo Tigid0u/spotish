@@ -77,7 +77,7 @@ public class App {
     // Music related routes
     app.get("/musics/last-listened", musicController::getTenLastListened, Role.LOGGED_IN);
     app.get("/musics/most-listened", musicController::getTenMostListened, Role.LOGGED_IN);
-    // This route must be the last of the GET music related routes as it takes a
+    app.get("/musics/liked", musicController::getLiked, Role.LOGGED_IN);
     // parameter. Otherwise any second part of the url (ex:'last-listened') would be
     // interpreted as a parameter
     app.get("/musics/{idMedia}", musicController::getOne, Role.OPEN, Role.LOGGED_IN);

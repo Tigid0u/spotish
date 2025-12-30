@@ -133,4 +133,34 @@ public class MusicRepository {
       return musics;
     }
   }
+
+  public List<Music> getLikedMusics(Connection conn, String username) throws SQLException {
+    String sql = """
+        SELECT  c.idchanson AS musicId, m.titre AS title, m.datedesortie AS releaseDate, c.duree AS duration, c.genre AS genre,
+          STRING_AGG(DISTINCT cm.nomcreateur, ', ' ORDER BY cm.nomcreateur) AS creatorNames
+        FROM spotish.utilisateur_aime_chanson uac
+        JOIN spotish.chanson c         ON c.idchanson = uac.idchanson
+        JOIN spotish.media m           ON m.idmedia = c.idchanson
+        JOIN spotish.createur_media cm ON cm.idmedia = m.idmedia
+        WHERE uac.nomutilisateur = 'amelie.paris'
+        GROUP BY c.idchanson, m.titre, m.datedesortie, c.duree, c.genre;
+                        """;
+
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, username);
+      ResultSet rs = ps.executeQuery();
+
+      List<Music> musics = new ArrayList<>();
+      while (rs.next()) {
+        musics.add(new Music(
+            rs.getLong("musicId"),
+            rs.getString("title"),
+            rs.getObject("releaseDate", LocalDate.class),
+            rs.getInt("duration"),
+            rs.getString("genre"),
+            rs.getString("creatorNames")));
+      }
+      return musics;
+    }
+  }
 }

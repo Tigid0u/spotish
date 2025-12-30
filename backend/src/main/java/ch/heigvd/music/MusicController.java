@@ -50,4 +50,14 @@ public class MusicController {
 
     ctx.json(musics);
   }
+
+  public void getLiked(Context ctx) {
+    // We know username is valid because this route is only accessible if the user
+    // has the role LOGGED_IN which implies that the username must be valid
+    String username = ctx.cookie("userNameCookie");
+
+    List<Music> musics = musicService.getLikedMusics(username);
+
+    ctx.json(musics);
+  }
 }

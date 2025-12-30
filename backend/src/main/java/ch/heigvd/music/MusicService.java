@@ -73,4 +73,18 @@ public class MusicService {
       throw new RuntimeException(e);
     }
   }
+
+  public List<Music> getLikedMusics(String username) {
+    try (Connection conn = ds.getConnection()) {
+      List<Music> musics = musicRepo.getLikedMusics(conn, username);
+
+      if (musics == null || musics.isEmpty()) {
+        throw new NotFoundResponse("No liked musics found for user \"" + username + "\"");
+      }
+
+      return musics;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }
