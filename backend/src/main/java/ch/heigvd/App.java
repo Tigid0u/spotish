@@ -75,8 +75,8 @@ public class App {
     app.post("/logout", authController::logoutUser, Role.LOGGED_IN, Role.OPEN);
 
     // Music related routes
-    app.get("/musics/{idMedia}", musicController::getOne, Role.OPEN, Role.LOGGED_IN);
     app.get("/musics/last-listened", musicController::getTenLastListened, Role.LOGGED_IN);
+    app.get("/musics/{idMedia}", musicController::getOne, Role.OPEN, Role.LOGGED_IN);
 
     app.start(PORT);
   }
