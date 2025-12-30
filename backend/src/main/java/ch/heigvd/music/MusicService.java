@@ -44,12 +44,15 @@ public class MusicService {
    *
    * @param username the username of the user
    * @return a list of the ten last listened Music objects for the user
+   * @throws NotFoundResponse if the user has not listened to any musics
    */
   public List<Music> getTenLastListenedMusics(String username) {
     try (Connection conn = ds.getConnection()) {
-      // Musics might be empty if user hasn't listened to any musics, not a problem
-      // here so no NotFoundResponse
       List<Music> musics = musicRepo.getTenLastListened(conn, username);
+
+      if (musics == null || musics.isEmpty()) {
+        throw new NotFoundResponse("No listened musics found for user \"" + username + "\"");
+      }
 
       return musics;
     } catch (SQLException e) {
