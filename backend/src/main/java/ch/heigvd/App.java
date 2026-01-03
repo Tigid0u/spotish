@@ -92,6 +92,7 @@ public class App {
     app.post("/musics/liked/{idMedia}", musicController::likeMusic, Role.LOGGED_IN);
 
     // Playlist related routes
+    app.get("/playlists/{playlistId}", playlistController::getPlaylist, Role.OPEN, Role.LOGGED_IN);
     app.post("/playlists", playlistController::createPlaylist, Role.LOGGED_IN);
 
     app.start(PORT);
