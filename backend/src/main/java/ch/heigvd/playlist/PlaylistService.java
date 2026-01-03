@@ -115,4 +115,30 @@ public class PlaylistService {
       throw new RuntimeException(e);
     }
   }
+
+  /**
+   * Make the authenticated user follow a playlist.
+   * 
+   * @param username   The name of the user.
+   * @param playlistId The unique identifier of the playlist.
+   * @throws NotFoundResponse if the user or playlist does not exist.
+   */
+  public void followPlaylist(String username, Long playlistId) {
+    try (Connection conn = ds.getConnection()) {
+      // No need to check if user exists here since this is done during authentication
+      // Check if playlist exists
+      if (!playlistRepo.exists(conn, playlistId)) {
+        throw new NotFoundResponse("Playlist with ID " + playlistId + " does not exist");
+      }
+
+      // Check if user already follows the playlist
+      if (playlistRepo.isFollowingPlaylist(conn, username, playlistId)) {
+        return; // No action needed if already following
+      }
+
+      playlistRepo.followPlaylist(conn, username, playlistId);
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

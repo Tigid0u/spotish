@@ -202,6 +202,56 @@ public class PlaylistRepository {
   }
 
   /**
+   * Follow a playlist for a specific user.
+   *
+   * @param conn       the database connection
+   * @param username   the username of the user
+   * @param playlistId the unique identifier of the playlist to follow
+   * @return the number of rows affected
+   * @throws SQLException if a database access error occurs
+   */
+  public int followPlaylist(Connection conn, String username, Long playlistId) throws SQLException {
+    String sql = """
+        INSERT INTO spotish.utilisateur_playlist (nomutilisateur, idplaylist)
+        VALUES (?, ?);
+            """;
+
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, username);
+      ps.setLong(2, playlistId);
+
+      return ps.executeUpdate();
+    }
+  }
+
+  /**
+   * Check if a user is following a specific playlist.
+   *
+   * @param conn       the database connection
+   * @param username   the username of the user
+   * @param playlistId the unique identifier of the playlist
+   * @return true if the user is following the playlist, false otherwise
+   * @throws SQLException if a database access error occurs
+   */
+  public boolean isFollowingPlaylist(Connection conn, String username, Long playlistId) throws SQLException {
+    String sql = """
+        SELECT COUNT(*) AS count
+        FROM spotish.utilisateur_playlist
+        WHERE nomutilisateur = ? AND idplaylist = ?;
+                """;
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, username);
+      ps.setLong(2, playlistId);
+      ResultSet rs = ps.executeQuery();
+
+      if (rs.next()) {
+        return rs.getInt("count") > 0;
+      }
+      return false;
+    }
+  }
+
+  /**
    * Get all musics of a given playlist.
    *
    * @param conn       the database connection

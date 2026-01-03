@@ -80,4 +80,22 @@ public class PlaylistController {
 
     ctx.json(playlists);
   }
+
+  /**
+   * Follow a playlist (authenticated user).
+   *
+   * @param ctx the Javalin context
+   */
+  public void followPlaylist(Context ctx) {
+    Long playlistId = ctx.pathParamAsClass("playlistId", Long.class)
+        .check(id -> id > 0, "Playlist ID must be a positive number")
+        .get();
+
+    String username = ctx.cookie("userNameCookie");
+
+    playlistService.followPlaylist(username, playlistId);
+
+    // 201 == Created
+    ctx.status(201);
+  }
 }
