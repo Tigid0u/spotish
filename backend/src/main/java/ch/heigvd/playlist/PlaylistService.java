@@ -1,7 +1,10 @@
 package ch.heigvd.playlist;
 
+import ch.heigvd.user.UserRepository;
+
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 
 import javax.sql.DataSource;
 
@@ -11,11 +14,13 @@ import io.javalin.http.NotFoundResponse;
 
 public class PlaylistService {
   private final PlaylistRepository playlistRepo;
+  private final UserRepository userRepo;
   private final DataSource ds;
 
-  public PlaylistService(DataSource ds, PlaylistRepository playlistRepo) {
+  public PlaylistService(DataSource ds, PlaylistRepository playlistRepo, UserRepository userRepo) {
     this.ds = ds;
     this.playlistRepo = playlistRepo;
+    this.userRepo = userRepo;
   }
 
   /**
@@ -51,6 +56,32 @@ public class PlaylistService {
         throw new NotFoundResponse("Playlist with ID " + playlistId + " not found");
       }
       return playlist;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Get all playlists created by a specific user.
+   * 
+   * @param creatorName The name of the creator.
+   * @return A list of playlists created by the specified user.
+   * @throws NotFoundResponse if no playlists are found for the given user.
+   */
+  public List<Playlist> getUserPlaylists(String creatorName) {
+    try (Connection conn = ds.getConnection()) {
+      // Check if user exists first
+      if (!userRepo.exists(conn, creatorName)) {
+        throw new NotFoundResponse("User " + creatorName + " does not exist");
+      }
+
+      List<Playlist> playlists = playlistRepo.getUserPlaylists(conn, creatorName);
+
+      if (playlists.isEmpty()) {
+        throw new NotFoundResponse("No playlists found for user " + creatorName);
+      }
+
+      return playlists;
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

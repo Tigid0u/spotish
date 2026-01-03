@@ -126,6 +126,43 @@ public class PlaylistRepository {
   }
 
   /**
+   * Get all playlists created by a specific user.
+   *
+   * @param conn        the database connection
+   * @param creatorName the name of the playlist creator
+   * @return a list of playlists created by the specified user
+   * @throws SQLException if a database access error occurs
+   */
+  public List<Playlist> getUserPlaylists(Connection conn, String creatorName) throws SQLException {
+    String sql = """
+        SELECT p.idplaylist AS playlistId, p.nom AS name, p.description AS description, p.nomcreateur AS creatorName
+        FROM spotish.playlist p
+        WHERE p.nomcreateur = ?;
+                """;
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, creatorName);
+      ResultSet rs = ps.executeQuery();
+
+      List<Playlist> playlists = new ArrayList<>();
+
+      while (rs.next()) {
+        Long playlistId = rs.getLong("playlistId");
+        List<Music> musics = getMusicsOfPlaylist(conn, playlistId);
+
+        Playlist playlist = new Playlist(
+            playlistId,
+            rs.getString("name"),
+            rs.getString("description"),
+            rs.getString("creatorName"),
+            musics);
+
+        playlists.add(playlist);
+      }
+      return playlists;
+    }
+  }
+
+  /**
    * Get all musics of a given playlist.
    *
    * @param conn       the database connection

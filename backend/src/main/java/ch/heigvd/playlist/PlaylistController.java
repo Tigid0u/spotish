@@ -1,5 +1,7 @@
 package ch.heigvd.playlist;
 
+import java.util.List;
+
 import ch.heigvd.entities.Playlist;
 import io.javalin.http.Context;
 
@@ -48,5 +50,21 @@ public class PlaylistController {
     Playlist playlist = playlistService.getPlaylist(playlistId);
 
     ctx.json(playlist);
+  }
+
+  /**
+   * Get all playlists created by a specific user.
+   *
+   * @param ctx the Javalin context
+   */
+  public void getUserPlaylists(Context ctx) {
+    String creatorName = ctx.pathParamAsClass("creatorName", String.class)
+        .check(name -> name != null && !name.isEmpty(), "Creator name must not be empty")
+        .check(name -> name == null || name.length() <= 250, "Creator name must be at most 250 characters")
+        .get();
+
+    List<Playlist> playlists = playlistService.getUserPlaylists(creatorName);
+
+    ctx.json(playlists);
   }
 }
