@@ -98,4 +98,44 @@ public class PlaylistController {
     // 201 == Created
     ctx.status(201);
   }
+
+  /**
+   * Add a music to a playlist owned by the logged-in user.
+   *
+   * @param ctx the Javalin context
+   */
+  public void addMusicToPlaylist(Context ctx) {
+    Long musicId = ctx.pathParamAsClass("idMedia", Long.class)
+        .check(id -> id > 0, "Music ID must be a positive number")
+        .get();
+    Long playlistId = ctx.pathParamAsClass("playlistId", Long.class)
+        .check(id -> id > 0, "Playlist ID must be a positive number")
+        .get();
+    String username = ctx.cookie("userNameCookie");
+
+    playlistService.addMusicToPlaylist(username, playlistId, musicId);
+
+    // 201 == Created
+    ctx.status(201);
+  }
+
+  /**
+   * Remove a music from a playlist owned by the logged-in user.
+   *
+   * @param ctx the Javalin context
+   */
+  public void removeMusicFromPlaylist(Context ctx) {
+    Long musicId = ctx.pathParamAsClass("idMedia", Long.class)
+        .check(id -> id > 0, "Music ID must be a positive number")
+        .get();
+    Long playlistId = ctx.pathParamAsClass("playlistId", Long.class)
+        .check(id -> id > 0, "Playlist ID must be a positive number")
+        .get();
+    String username = ctx.cookie("userNameCookie");
+
+    playlistService.removeMusicFromPlaylist(username, playlistId, musicId);
+
+    // 204 == No Content
+    ctx.status(204);
+  }
 }

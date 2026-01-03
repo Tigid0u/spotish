@@ -58,7 +58,7 @@ public class App {
 
     // Playlist related ressources
     PlaylistRepository playlistRepository = new PlaylistRepository();
-    PlaylistService playlistService = new PlaylistService(ds, playlistRepository, userRepository);
+    PlaylistService playlistService = new PlaylistService(ds, playlistRepository, userRepository, musicRepository);
     PlaylistController playlistController = new PlaylistController(playlistService);
 
     // Access management
@@ -92,11 +92,14 @@ public class App {
     app.post("/musics/liked/{idMedia}", musicController::likeMusic, Role.LOGGED_IN);
 
     // Playlist related routes
-    app.get("/playlists/{playlistId}", playlistController::getPlaylist, Role.OPEN, Role.LOGGED_IN);
     app.get("/playlists/user/{creatorName}", playlistController::getUserPlaylists, Role.OPEN, Role.LOGGED_IN);
     app.get("/playlists/followed", playlistController::getFollowedPlaylists, Role.LOGGED_IN);
+    app.get("/playlists/{playlistId}", playlistController::getPlaylist, Role.OPEN, Role.LOGGED_IN);
     app.post("/playlists", playlistController::createPlaylist, Role.LOGGED_IN);
     app.post("playlists/followed/{playlistId}", playlistController::followPlaylist, Role.LOGGED_IN);
+    app.post("playlists/{playlistId}/musics/{idMedia}", playlistController::addMusicToPlaylist, Role.LOGGED_IN);
+    app.delete("playlists/{playlistId}/musics/{idMedia}", playlistController::removeMusicFromPlaylist,
+        Role.LOGGED_IN);
 
     app.start(PORT);
   }

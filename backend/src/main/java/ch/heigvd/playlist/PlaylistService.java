@@ -1,6 +1,7 @@
 package ch.heigvd.playlist;
 
 import ch.heigvd.user.UserRepository;
+import ch.heigvd.music.MusicRepository;
 
 import java.sql.Connection;
 import java.sql.SQLException;
@@ -11,16 +12,20 @@ import javax.sql.DataSource;
 import ch.heigvd.entities.Playlist;
 import io.javalin.http.ConflictResponse;
 import io.javalin.http.NotFoundResponse;
+import io.javalin.http.UnauthorizedResponse;
 
 public class PlaylistService {
   private final PlaylistRepository playlistRepo;
   private final UserRepository userRepo;
+  private final MusicRepository musicRepo;
   private final DataSource ds;
 
-  public PlaylistService(DataSource ds, PlaylistRepository playlistRepo, UserRepository userRepo) {
+  public PlaylistService(DataSource ds, PlaylistRepository playlistRepo, UserRepository userRepo,
+      MusicRepository musicRepo) {
     this.ds = ds;
     this.playlistRepo = playlistRepo;
     this.userRepo = userRepo;
+    this.musicRepo = musicRepo;
   }
 
   /**
@@ -32,7 +37,7 @@ public class PlaylistService {
   public void createPlaylist(Playlist playlist) {
     try (Connection conn = ds.getConnection()) {
       // Check if playlist with the same ID already exists before inserting
-      if (playlistRepo.exists(conn, playlist.id())) {
+      if (playlist.id() != null && playlistRepo.exists(conn, playlist.id())) {
         throw new ConflictResponse("Playlist with ID " + playlist.id() + " already exists");
       }
 
@@ -137,6 +142,69 @@ public class PlaylistService {
       }
 
       playlistRepo.followPlaylist(conn, username, playlistId);
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Add a music to a playlist.
+   * 
+   * @param username   The name of the user adding the music.
+   * @param playlistId The unique identifier of the playlist.
+   * @param musicId    The unique identifier of the music.
+   * @throws NotFoundResponse     if the music or playlist does not exist.
+   * @throws UnauthorizedResponse if the user is not the creator of the playlist.
+   */
+  public void addMusicToPlaylist(String username, Long playlistId, Long musicId) {
+    try (Connection conn = ds.getConnection()) {
+      // Check if music exists
+      if (!musicRepo.exists(conn, musicId)) {
+        throw new NotFoundResponse("Music with ID " + musicId + " does not exist");
+      }
+
+      Playlist playlist = playlistRepo.getPlaylist(conn, playlistId);
+
+      // Check if playlist exists
+      if (playlist == null) {
+        throw new NotFoundResponse("Playlist with ID " + playlistId + " does not exist");
+      }
+      // Check if user is the creator of the playlist
+      if (!playlist.creatorName().equals(username)) {
+        throw new UnauthorizedResponse("User " + username + " is not the creator of playlist " + playlistId);
+      }
+
+      // Add music to playlist
+      playlistRepo.addMusicToPlaylist(conn, musicId, playlistId);
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
+
+  /**
+   * Remove a music from a playlist.
+   * 
+   * @param username   The name of the user removing the music.
+   * @param playlistId The unique identifier of the playlist.
+   * @param musicId    The unique identifier of the music.
+   * @throws NotFoundResponse     if the playlist does not exist.
+   * @throws UnauthorizedResponse if the user is not the creator of the playlist.
+   */
+  public void removeMusicFromPlaylist(String username, Long playlistId, Long musicId) {
+    try (Connection conn = ds.getConnection()) {
+      Playlist playlist = playlistRepo.getPlaylist(conn, playlistId);
+
+      // Check if playlist exists
+      if (playlist == null) {
+        throw new NotFoundResponse("Playlist with ID " + playlistId + " does not exist");
+      }
+      // Check if user is the creator of the playlist
+      if (!playlist.creatorName().equals(username)) {
+        throw new UnauthorizedResponse("User " + username + " is not the creator of playlist " + playlistId);
+      }
+
+      // Remove music from playlist
+      playlistRepo.deleteMusicFromPlaylist(conn, musicId, playlistId);
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }

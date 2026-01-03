@@ -32,7 +32,7 @@ public class PlaylistRepository {
             )
             INSERT INTO spotish.chanson_playlist (idchanson, idplaylist)
             SELECT unnest(?::bigint[]), np.idplaylist
-            FROM new_playlist np
+            FROM new_playlist np;
             """;
 
     // Disable auto-commit mode to enable transaction management
@@ -248,6 +248,52 @@ public class PlaylistRepository {
         return rs.getInt("count") > 0;
       }
       return false;
+    }
+  }
+
+  /**
+   * Add a music to a specific playlist.
+   *
+   * @param conn       the database connection
+   * @param musicId    the unique identifier of the music
+   * @param playlistId the unique identifier of the playlist
+   * @return the number of rows affected
+   * @throws SQLException if a database access error occurs
+   */
+  public int addMusicToPlaylist(Connection conn, Long musicId, Long playlistId) throws SQLException {
+    String sql = """
+        INSERT INTO spotish.chanson_playlist (idchanson, idplaylist)
+        VALUES (?, ?);
+            """;
+
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setLong(1, musicId);
+      ps.setLong(2, playlistId);
+
+      return ps.executeUpdate();
+    }
+  }
+
+  /**
+   * Delete a music from a specific playlist.
+   *
+   * @param conn       the database connection
+   * @param musicId    the unique identifier of the music
+   * @param playlistId the unique identifier of the playlist
+   * @return the number of rows affected
+   * @throws SQLException if a database access error occurs
+   */
+  public int deleteMusicFromPlaylist(Connection conn, Long musicId, Long playlistId) throws SQLException {
+    String sql = """
+        DELETE FROM spotish.chanson_playlist
+        WHERE idchanson = ? AND idplaylist = ?;
+            """;
+
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setLong(1, musicId);
+      ps.setLong(2, playlistId);
+
+      return ps.executeUpdate();
     }
   }
 
