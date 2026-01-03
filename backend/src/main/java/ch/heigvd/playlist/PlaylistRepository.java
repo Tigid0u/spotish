@@ -163,6 +163,45 @@ public class PlaylistRepository {
   }
 
   /**
+   * Get all playlists followed by a specific user.
+   *
+   * @param conn     the database connection
+   * @param username the username of the user
+   * @return a list of playlists followed by the specified user
+   * @throws SQLException if a database access error occurs
+   */
+  public List<Playlist> getAllFollowedPlaylists(Connection conn, String username) throws SQLException {
+    String sql = """
+        SELECT up.idplaylist, p.nom AS playlist_name, p.description, p.nomcreateur AS playlist_creator
+        FROM spotish.utilisateur_playlist up
+        JOIN spotish.playlist p ON up.idplaylist = p.idplaylist
+        WHERE up.nomutilisateur = ?;
+            """;
+
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, username);
+      ResultSet rs = ps.executeQuery();
+
+      List<Playlist> playlists = new ArrayList<>();
+
+      while (rs.next()) {
+        Long playlistId = rs.getLong("idplaylist");
+        List<Music> musics = getMusicsOfPlaylist(conn, playlistId);
+
+        Playlist playlist = new Playlist(
+            playlistId,
+            rs.getString("playlist_name"),
+            rs.getString("description"),
+            rs.getString("playlist_creator"),
+            musics);
+
+        playlists.add(playlist);
+      }
+      return playlists;
+    }
+  }
+
+  /**
    * Get all musics of a given playlist.
    *
    * @param conn       the database connection

@@ -86,4 +86,33 @@ public class PlaylistService {
       throw new RuntimeException(e);
     }
   }
+
+  /**
+   * Get all playlists followed by a specific user.
+   * 
+   * @param username The name of the user.
+   * @return A list of playlists followed by the specified user.
+   * @throws NotFoundResponse if no followed playlists are found for the given
+   *                          user.
+   */
+  public List<Playlist> getFollowedPlaylists(String username) {
+    try (Connection conn = ds.getConnection()) {
+      // Check if user exists first (technically shouldn't be necessary if called
+      // after authentication but if we scale this to apply to every user it might be
+      // useful)
+      if (!userRepo.exists(conn, username)) {
+        throw new NotFoundResponse("User " + username + " does not exist");
+      }
+
+      List<Playlist> playlists = playlistRepo.getAllFollowedPlaylists(conn, username);
+
+      if (playlists.isEmpty()) {
+        throw new NotFoundResponse("No followed playlists found for user " + username);
+      }
+
+      return playlists;
+    } catch (SQLException e) {
+      throw new RuntimeException(e);
+    }
+  }
 }

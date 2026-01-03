@@ -94,6 +94,7 @@ public class App {
     // Playlist related routes
     app.get("/playlists/{playlistId}", playlistController::getPlaylist, Role.OPEN, Role.LOGGED_IN);
     app.get("/playlists/user/{creatorName}", playlistController::getUserPlaylists, Role.OPEN, Role.LOGGED_IN);
+    app.get("/playlists/followed", playlistController::getFollowedPlaylists, Role.LOGGED_IN);
     app.post("/playlists", playlistController::createPlaylist, Role.LOGGED_IN);
 
     app.start(PORT);

@@ -67,4 +67,17 @@ public class PlaylistController {
 
     ctx.json(playlists);
   }
+
+  /**
+   * Get all playlists followed by the logged-in user.
+   *
+   * @param ctx the Javalin context
+   */
+  public void getFollowedPlaylists(Context ctx) {
+    String username = ctx.cookie("userNameCookie");
+
+    List<Playlist> playlists = playlistService.getFollowedPlaylists(username);
+
+    ctx.json(playlists);
+  }
 }
