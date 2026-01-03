@@ -81,6 +81,7 @@ public class App {
     // parameter. Otherwise any second part of the url (ex:'last-listened') would be
     // interpreted as a parameter
     app.get("/musics/{idMedia}", musicController::getOne, Role.OPEN, Role.LOGGED_IN);
+    app.post("/musics/liked/{idMedia}", musicController::likeMusic, Role.LOGGED_IN);
 
     app.start(PORT);
   }

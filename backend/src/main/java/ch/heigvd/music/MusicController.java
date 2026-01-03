@@ -41,6 +41,12 @@ public class MusicController {
     ctx.json(musics);
   }
 
+  /**
+   * Handles the HTTP GET request to retrieve the ten most listened musics for
+   * the logged-in user.
+   *
+   * @param ctx the Javalin HTTP context containing request and response data
+   */
   public void getTenMostListened(Context ctx) {
     // We know username is valid because this route is only accessible if the user
     // has the role LOGGED_IN which implies that the username must be valid
@@ -51,6 +57,12 @@ public class MusicController {
     ctx.json(musics);
   }
 
+  /**
+   * Handles the HTTP GET request to retrieve all liked musics for
+   * the logged-in user.
+   *
+   * @param ctx the Javalin HTTP context containing request and response data
+   */
   public void getLiked(Context ctx) {
     // We know username is valid because this route is only accessible if the user
     // has the role LOGGED_IN which implies that the username must be valid
@@ -59,5 +71,20 @@ public class MusicController {
     List<Music> musics = musicService.getLikedMusics(username);
 
     ctx.json(musics);
+  }
+
+  /**
+   * Handles the HTTP POST request to like a music for the logged-in user.
+   *
+   * @param ctx the Javalin HTTP context containing request and response data
+   */
+  public void likeMusic(Context ctx) {
+    String username = ctx.cookie("userNameCookie");
+    Long musicId = ctx.pathParamAsClass("idMedia", Long.class).check(id -> id >= 0, "idMedia must be positive").get();
+
+    musicService.likeMusic(username, musicId);
+
+    // 201 == Created
+    ctx.status(201);
   }
 }

@@ -98,6 +98,14 @@ public class MusicRepository {
     }
   }
 
+  /**
+   * Retrieves the ten most listened musics for a given user from the database.
+   *
+   * @param conn     the database connection
+   * @param username the username of the user
+   * @return a list of the ten most listened Music objects for the user
+   * @throws SQLException if a database access error occurs
+   */
   public List<Music> getTenMostListened(Connection conn, String username) throws SQLException {
     String sql = """
         WITH most_listened_musics AS (SELECT e.idchanson, count(*) as nblistening
@@ -134,6 +142,14 @@ public class MusicRepository {
     }
   }
 
+  /**
+   * Retrieves all musics liked by a given user from the database.
+   *
+   * @param conn     the database connection
+   * @param username the username of the user
+   * @return a list of Music objects liked by the user
+   * @throws SQLException if a database access error occurs
+   */
   public List<Music> getLikedMusics(Connection conn, String username) throws SQLException {
     String sql = """
         SELECT  c.idchanson AS musicId, m.titre AS title, m.datedesortie AS releaseDate, c.duree AS duration, c.genre AS genre,
@@ -161,6 +177,56 @@ public class MusicRepository {
             rs.getString("creatorNames")));
       }
       return musics;
+    }
+  }
+
+  /**
+   * Marks a music as liked by a given user in the database.
+   *
+   * @param conn     the database connection
+   * @param username the username of the user
+   * @param musicId  the unique identifier of the music
+   * @return the number of rows affected
+   * @throws SQLException if a database access error occurs
+   */
+  public int likeMusic(Connection conn, String username, Long musicId) throws SQLException {
+    String sql = """
+        INSERT INTO spotish.utilisateur_aime_chanson (nomutilisateur, idchanson)
+        VALUES (?, ?);
+                """;
+
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, username);
+      ps.setLong(2, musicId);
+      return ps.executeUpdate();
+    }
+  }
+
+  /**
+   * Checks if a music is liked by a given user in the database.
+   *
+   * @param conn     the database connection
+   * @param username the username of the user
+   * @param musicId  the unique identifier of the music
+   * @return true if the music is liked by the user, false otherwise
+   * @throws SQLException if a database access error occurs
+   */
+  public boolean isMusicLikedByUser(Connection conn, String username, Long musicId) throws SQLException {
+    String sql = """
+        SELECT COUNT(*) AS count
+        FROM spotish.utilisateur_aime_chanson
+        WHERE nomutilisateur = ? AND idchanson = ?;
+                """;
+
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setString(1, username);
+      ps.setLong(2, musicId);
+      ResultSet rs = ps.executeQuery();
+      if (rs.next()) {
+        return rs.getInt("count") > 0;
+      } else {
+        return false;
+      }
     }
   }
 }
