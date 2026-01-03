@@ -2,10 +2,24 @@ package ch.heigvd;
 
 import javax.sql.DataSource;
 
+import java.sql.SQLException;
 import java.util.Map;
 
 import io.javalin.Javalin;
+import io.javalin.http.Context;
+import io.javalin.http.NotFoundResponse;
+import io.javalin.http.UnauthorizedResponse;
+
+import io.javalin.security.RouteRole;
+import ch.heigvd.auth.AuthController;
 import ch.heigvd.user.*;
+
+// Acess roles
+// OPEN = no username cookie needs to be set to access the ressource, 
+// LOGGED_IN = a username cookie is required to access the ressource
+enum Role implements RouteRole {
+  OPEN, LOGGED_IN
+}
 
 public class App {
   public static final int PORT = 8080;
@@ -24,15 +38,59 @@ public class App {
     // Init a new DataSource pool using HikariCP
     DataSource ds = Db.createDataSource();
 
+    // User related ressources
     UserRepository userRepository = new UserRepository();
     UserService userService = new UserService(ds, userRepository);
     UserController userController = new UserController(userService);
 
+    // Auth related ressources
+    AuthController authController = new AuthController(userService);
+
+    // Access management
+    // We check the required roles before accessing every routes
+    app.beforeMatched(ctx -> {
+      Role userRole = App.getUserRole(ctx, userService);
+      if (!ctx.routeRoles().contains(userRole)) { // routeRoles are provided through the Context interface
+        throw new UnauthorizedResponse(
+            "You must be logged in (username cookie must be set) to access this ressource !");
+      }
+    });
+
     // Register routes
-    app.get("/utilisateurs", userController::getAll);
-    app.get("/utilisateurs/{nomUtilisateur}", userController::getOne);
-    app.post("/utilisateurs", userController::insertOne);
+
+    // User related routes (endpoints)
+    app.get("/utilisateurs", userController::getAll, Role.OPEN);
+    app.get("/utilisateurs/{nomUtilisateur}", userController::getOne, Role.OPEN);
+    app.post("/utilisateurs", userController::insertOne, Role.OPEN);
+
+    // Authentication related routes
+    app.post("/login/{nomUtilisateur}", authController::loginUser, Role.OPEN, Role.LOGGED_IN);
+    app.post("/logout", authController::logoutUser, Role.LOGGED_IN, Role.OPEN);
 
     app.start(PORT);
+  }
+
+  /**
+   * Determine the role of the user making the request based on the
+   * "userNameCookie" cookie.
+   * 
+   * @param ctx         The Javalin context of the request.
+   * @param userService The UserService to check if the user exists.
+   * @return The Role of the user (OPEN or LOGGED_IN).
+   */
+  private static Role getUserRole(Context ctx, UserService userService) {
+    String username = ctx.cookie("userNameCookie");
+
+    if (username == null) {
+      return Role.OPEN;
+    }
+
+    try {
+      userService.getUser(username);
+      return Role.LOGGED_IN;
+    } catch (NotFoundResponse e) {
+      // Means the user doesn't exist => the user is not LOGGED_IN
+      return Role.OPEN;
+    }
   }
 }
