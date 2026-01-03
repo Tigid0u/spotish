@@ -2,7 +2,6 @@ package ch.heigvd;
 
 import javax.sql.DataSource;
 
-import java.sql.SQLException;
 import java.util.Map;
 
 import io.javalin.Javalin;
@@ -12,6 +11,9 @@ import io.javalin.http.UnauthorizedResponse;
 
 import io.javalin.security.RouteRole;
 import ch.heigvd.auth.AuthController;
+import ch.heigvd.music.MusicController;
+import ch.heigvd.music.MusicRepository;
+import ch.heigvd.music.MusicService;
 import ch.heigvd.user.*;
 
 // Acess roles
@@ -46,6 +48,11 @@ public class App {
     // Auth related ressources
     AuthController authController = new AuthController(userService);
 
+    // Music related ressources
+    MusicRepository musicRepository = new MusicRepository();
+    MusicService musicService = new MusicService(ds, musicRepository);
+    MusicController musicController = new MusicController(musicService);
+
     // Access management
     // We check the required roles before accessing every routes
     app.beforeMatched(ctx -> {
@@ -59,13 +66,22 @@ public class App {
     // Register routes
 
     // User related routes (endpoints)
-    app.get("/utilisateurs", userController::getAll, Role.OPEN);
-    app.get("/utilisateurs/{nomUtilisateur}", userController::getOne, Role.OPEN);
-    app.post("/utilisateurs", userController::insertOne, Role.OPEN);
+    app.get("/utilisateurs", userController::getAll, Role.OPEN, Role.LOGGED_IN);
+    app.get("/utilisateurs/{nomUtilisateur}", userController::getOne, Role.OPEN, Role.LOGGED_IN);
+    app.post("/utilisateurs", userController::insertOne, Role.OPEN, Role.LOGGED_IN);
 
     // Authentication related routes
     app.post("/login/{nomUtilisateur}", authController::loginUser, Role.OPEN, Role.LOGGED_IN);
     app.post("/logout", authController::logoutUser, Role.LOGGED_IN, Role.OPEN);
+
+    // Music related routes
+    app.get("/musics/last-listened", musicController::getTenLastListened, Role.LOGGED_IN);
+    app.get("/musics/most-listened", musicController::getTenMostListened, Role.LOGGED_IN);
+    app.get("/musics/liked", musicController::getLiked, Role.LOGGED_IN);
+    // parameter. Otherwise any second part of the url (ex:'last-listened') would be
+    // interpreted as a parameter
+    app.get("/musics/{idMedia}", musicController::getOne, Role.OPEN, Role.LOGGED_IN);
+    app.post("/musics/liked/{idMedia}", musicController::likeMusic, Role.LOGGED_IN);
 
     app.start(PORT);
   }

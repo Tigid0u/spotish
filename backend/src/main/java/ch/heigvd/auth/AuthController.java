@@ -1,8 +1,9 @@
 package ch.heigvd.auth;
 
 import ch.heigvd.user.UserService;
-import ch.heigvd.user.User;
 import io.javalin.http.Context;
+
+import ch.heigvd.entities.User;
 
 public class AuthController {
   private final UserService userService;

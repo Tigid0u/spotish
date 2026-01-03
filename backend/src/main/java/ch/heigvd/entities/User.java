@@ -1,4 +1,4 @@
-package ch.heigvd.user;
+package ch.heigvd.entities;
 
 import java.time.LocalDate;
 

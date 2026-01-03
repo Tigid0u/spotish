@@ -4,6 +4,8 @@ import java.util.List;
 
 import io.javalin.http.Context;
 
+import ch.heigvd.entities.User;
+
 public class UserController {
   private final UserService userService;
 
