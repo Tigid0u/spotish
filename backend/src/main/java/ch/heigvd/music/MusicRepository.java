@@ -229,4 +229,30 @@ public class MusicRepository {
       }
     }
   }
+
+  /**
+   * Checks if a music exists in the database.
+   *
+   * @param conn    the database connection
+   * @param musicId the unique identifier of the music
+   * @return true if the music exists, false otherwise
+   * @throws SQLException if a database access error occurs
+   */
+  public boolean exists(Connection conn, Long musicId) throws SQLException {
+    String sql = """
+        SELECT COUNT(*) AS count
+        FROM spotish.chanson
+        WHERE idchanson = ?;
+                """;
+
+    try (PreparedStatement ps = conn.prepareStatement(sql)) {
+      ps.setLong(1, musicId);
+      ResultSet rs = ps.executeQuery();
+      if (rs.next()) {
+        return rs.getInt("count") > 0;
+      } else {
+        return false;
+      }
+    }
+  }
 }

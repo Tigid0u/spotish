@@ -14,6 +14,9 @@ import ch.heigvd.auth.AuthController;
 import ch.heigvd.music.MusicController;
 import ch.heigvd.music.MusicRepository;
 import ch.heigvd.music.MusicService;
+import ch.heigvd.playlist.PlaylistController;
+import ch.heigvd.playlist.PlaylistRepository;
+import ch.heigvd.playlist.PlaylistService;
 import ch.heigvd.user.*;
 
 // Acess roles
@@ -53,6 +56,11 @@ public class App {
     MusicService musicService = new MusicService(ds, musicRepository);
     MusicController musicController = new MusicController(musicService);
 
+    // Playlist related ressources
+    PlaylistRepository playlistRepository = new PlaylistRepository();
+    PlaylistService playlistService = new PlaylistService(ds, playlistRepository, userRepository, musicRepository);
+    PlaylistController playlistController = new PlaylistController(playlistService);
+
     // Access management
     // We check the required roles before accessing every routes
     app.beforeMatched(ctx -> {
@@ -82,6 +90,16 @@ public class App {
     // interpreted as a parameter
     app.get("/musics/{idMedia}", musicController::getOne, Role.OPEN, Role.LOGGED_IN);
     app.post("/musics/liked/{idMedia}", musicController::likeMusic, Role.LOGGED_IN);
+
+    // Playlist related routes
+    app.get("/playlists/user/{creatorName}", playlistController::getUserPlaylists, Role.OPEN, Role.LOGGED_IN);
+    app.get("/playlists/followed", playlistController::getFollowedPlaylists, Role.LOGGED_IN);
+    app.get("/playlists/{playlistId}", playlistController::getPlaylist, Role.OPEN, Role.LOGGED_IN);
+    app.post("/playlists", playlistController::createPlaylist, Role.LOGGED_IN);
+    app.post("playlists/followed/{playlistId}", playlistController::followPlaylist, Role.LOGGED_IN);
+    app.post("playlists/{playlistId}/musics/{idMedia}", playlistController::addMusicToPlaylist, Role.LOGGED_IN);
+    app.delete("playlists/{playlistId}/musics/{idMedia}", playlistController::removeMusicFromPlaylist,
+        Role.LOGGED_IN);
 
     app.start(PORT);
   }

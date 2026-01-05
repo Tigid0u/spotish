@@ -295,17 +295,18 @@ Create a new playlist.
 
 The request body must contain a JSON object with the following properties:
 
-- `idPlaylist` - The ID of the playlist
-- `nom` - The name of the playlist
-- `description` - The description of the playlist
+- `id` - The ID of the playlist
+- `name` - The name of the playlist
+- `decription` - The description of the playlist
+- `musics` - A JSON array of music IDs to be added to the playlist that must contain at least one music ID and is structured as follows:
+
+  ```json
+  [{ "musicId": 1 }, { "musicId": 2 }, { "musicId": 3 }]
+  ```
 
 ##### Response
 
-The response body contains a JSON object with the following properties:
-
-- `idPlaylist` - The ID of the playlist
-- `nom` - The name of the playlist
-- `description` - The description of the playlist
+The response body is empty.
 
 ##### Status codes
 
@@ -330,9 +331,16 @@ The request path must contain the following parameter:
 
 The response body contains a JSON object with the following properties:
 
-- `idPlaylist` - The ID of the playlist
-- `nom` - The name of the playlist
+- `id` - The ID of the playlist
+- `name` - The name of the playlist
 - `description` - The description of the playlist
+- `musics` - A JSON array of musics in the playlist with the following properties:
+  - `idMedia` - The ID of the music
+  - `title` - The title of the music
+  - `releaseDate` - The release date of the music (format: YYYY-MM-DD)
+  - `duration` - The duration of the music (in seconds)
+  - `genre` - The genre of the music
+  - `creatorNames` - The name of the creators (artist or groupe) of the music. If multiple creators, they are separated by commas.
 
 ##### Status codes
 
@@ -353,11 +361,18 @@ The request path must contain the following parameter:
 
 ##### Response
 
-The response body contains a JSON array with the following properties:
+The response body contains a JSON array with all playlists of the user with the following properties:
 
-- `idPlaylist` - The ID of the playlist
-- `nom` - The name of the playlist
+- `id` - The ID of the playlist
+- `name` - The name of the playlist
 - `description` - The description of the playlist
+- `musics` - A JSON array of musics in the playlist with the following properties:
+  - `idMedia` - The ID of the music
+  - `title` - The title of the music
+  - `releaseDate` - The release date of the music (format: YYYY-MM-DD)
+  - `duration` - The duration of the music (in seconds)
+  - `genre` - The genre of the music
+  - `creatorNames` - The name of the creators (artist or groupe) of the music. If multiple creators, they are separated by commas.
 
 ##### Status codes
 
@@ -376,11 +391,18 @@ The request body is empty. The current user is identified by the `user` cookie.
 
 ##### Response
 
-The response body contains a JSON array with the following properties:
+The response body contains a JSON array of followed playlists with the following properties:
 
-- `idPlaylist` - The ID of the playlist
-- `nom` - The name of the playlist
+- `id` - The ID of the playlist
+- `name` - The name of the playlist
 - `description` - The description of the playlist
+- `musics` - A JSON array of musics in the playlist with the following properties:
+  - `idMedia` - The ID of the music
+  - `title` - The title of the music
+  - `releaseDate` - The release date of the music (format: YYYY-MM-DD)
+  - `duration` - The duration of the music (in seconds)
+  - `genre` - The genre of the music
+  - `creatorNames` - The name of the creators (artist or groupe) of the music. If multiple creators, they are separated by commas.
 
 ##### Status codes
 
@@ -402,11 +424,7 @@ The request path must contain the following parameter:
 
 ##### Response
 
-The response body contains a JSON object with the following properties:
-
-- `idPlaylist` - The ID of the playlist
-- `nom` - The name of the playlist
-- `description` - The description of the playlist
+The response body is empty.
 
 ##### Status codes
 
@@ -430,10 +448,7 @@ The request path must contain the following parameters:
 
 ##### Response
 
-The response body contains a JSON object with the following properties:
-
-- `idPlaylist` - The ID of the playlist
-- `idMedia` - The ID of the music
+The response body is empty.
 
 ##### Status codes
 
