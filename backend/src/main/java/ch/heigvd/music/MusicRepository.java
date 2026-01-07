@@ -158,7 +158,7 @@ public class MusicRepository {
         JOIN spotish.chanson c         ON c.idchanson = uac.idchanson
         JOIN spotish.media m           ON m.idmedia = c.idchanson
         JOIN spotish.createur_media cm ON cm.idmedia = m.idmedia
-        WHERE uac.nomutilisateur = 'amelie.paris'
+        WHERE uac.nomutilisateur = ?
         GROUP BY c.idchanson, m.titre, m.datedesortie, c.duree, c.genre;
                         """;
 
