@@ -19,23 +19,23 @@ The API is based on the CRUD pattern. It has the following operations:
 
 **Music:**
 
-- Get 10 last listened musics
-- Get 3 most listened musics
+- Get 10 last listened musics (uses cache expiration model)
+- Get 3 most listened musics (uses cache expiration model)
 - Get a music by its ID
-- Get a music by its title
-- Get all musics
-- Get all liked musics
+- Get a music by its title (uses cache expiration model)
+- Get all musics (uses cache expiration model)
+- Get all liked musics (uses cache expiration model)
 - Like a music
 
 **Playlist:**
 
-- Create playlist
+- Create playlist (uses cache validation model)
 - Get a playlist by its ID
-- Get all playlists of a user
-- Get all followed playlists
+- Get all playlists of a user (uses cache validation model)
+- Get all followed playlists (uses cache validation model)
 - Follow a playlist
-- Add music to a playlist
-- Delete music from a playlist
+- Add music to a playlist (uses cache validation model)
+- Delete music from a playlist (uses cache validation model)
 
 **Artist:**
 
@@ -55,7 +55,7 @@ The API is based on the CRUD pattern. It has the following operations:
 
 #### Create user
 
-- `POST /utilisateurs`
+- `POST /users`
 
 Create a new user.
 
@@ -63,20 +63,20 @@ Create a new user.
 
 The request body must contain a JSON object with the following properties:
 
-- `nomUtilisateur` - The username of the user
-- `nom` - The last name of the user
-- `prenom` - The first name of the user
-- `dateDeNaissance` - The birth date of the user (format: YYYY-MM-DD)
+- `username` - The username of the user
+- `name` - The last name of the user
+- `firstName` - The first name of the user
+- `birthdate` - The birthdate of the user (format: YYYY-MM-DD)
 - `email` - The email of the user
 
 ##### Response
 
 The response body contains a JSON object with the following properties:
 
-- `nomUtilisateur` - The username of the user
-- `nom` - The last name of the user
-- `prenom` - The first name of the user
-- `dateDeNaissance` - The birth date of the user (format: YYYY-MM-DD)
+- `username` - The username of the user
+- `name` - The last name of the user
+- `firstName` - The first name of the user
+- `birthdate` - The birthdate of the user (format: YYYY-MM-DD)
 - `email` - The email of the user
 
 ##### Status codes
@@ -87,7 +87,7 @@ The response body contains a JSON object with the following properties:
 
 #### Get info on a user
 
-- `GET /utilisateurs/{nomUtilisateur}`
+- `GET /users/{username}`
 
 Get info on a user.
 
@@ -95,16 +95,16 @@ Get info on a user.
 
 The request path must contain the following parameter:
 
-- `nomUtilisateur` - The username of the user
+- `username` - The username of the user
 
 ##### Response
 
 The response body contains a JSON object with the following properties:
 
-- `nomUtilisateur` - The username of the user
-- `nom` - The last name of the user
-- `prenom` - The first name of the user
-- `dateDeNaissance` - The birth date of the user (format: YYYY-MM-DD)
+- `username` - The username of the user
+- `name` - The last name of the user
+- `firstName` - The first name of the user
+- `birthdate` - The birthdate of the user (format: YYYY-MM-DD)
 - `email` - The email of the user
 
 ##### Status codes
@@ -114,7 +114,7 @@ The response body contains a JSON object with the following properties:
 
 #### Get all users
 
-- `GET /utilisateurs`
+- `GET /users`
 
 Get all users.
 
@@ -126,10 +126,10 @@ The request body is empty.
 
 The response body contains a JSON array with the following properties:
 
-- `nomUtilisateur` - The username of the user
-- `nom` - The last name of the user
-- `prenom` - The first name of the user
-- `dateDeNaissance` - The birth date of the user (format: YYYY-MM-DD)
+- `username` - The username of the user
+- `name` - The last name of the user
+- `firstName` - The first name of the user
+- `birthdate` - The birthdate of the user (format: YYYY-MM-DD)
 - `email` - The email of the user
 
 ##### Status codes
@@ -145,7 +145,7 @@ The response body contains a JSON array with the following properties:
 
 - `GET /musics/last-listened`
 
-Get 10 last listened musics of current user.
+Get 10 last listened musics of current user. Uses cache expiration model.
 
 ##### Request
 
@@ -226,7 +226,7 @@ The response body contains a JSON object with the following properties:
 
 #### Get a music by its title
 
-- `GET /music/{title}`
+- `GET /musics/{title}`
 
 Get a music by its title.
 
@@ -255,7 +255,7 @@ The response body contains a JSON object with the following properties:
 
 #### Get all musics
 
-- `GET /music/all`
+- `GET /musics`
 
 Get all musics in the database.
 
@@ -294,13 +294,13 @@ The request body is empty. The current user is identified by the `user` cookie.
 
 The response body contains a JSON array with the following properties:
 
-- `nomUtilisateur` - The username of the user
+- `username` - The username of the user
 - `idMedia` - The ID of the music
-- `titre` - The title of the music
-- `dateDeSortie` - The release date of the music (format: YYYY-MM-DD)
-- `duree` - The duration of the music (in seconds)
+- `title` - The title of the music
+- `releaseDate` - The release date of the music (format: YYYY-MM-DD)
+- `duration` - The duration of the music (in seconds)
 - `genre` - The genre of the music
-- `nomCreateur` - The name of the creator (artist or groupe) of the music
+- `creatorNames` - The name of the creator (artist or groupe) of the music
 
 ##### Status codes
 
@@ -324,13 +324,13 @@ The request path must contain the following parameter:
 
 The response body contains a JSON object with the following properties:
 
-- `nomUtilisateur` - The username of the user
+- `username` - The username of the user
 - `idMedia` - The ID of the music
-- `titre` - The title of the music
-- `dateDeSortie` - The release date of the music (format: YYYY-MM-DD)
-- `duree` - The duration of the music (in seconds)
+- `title` - The title of the music
+- `releaseDate` - The release date of the music (format: YYYY-MM-DD)
+- `duration` - The duration of the music (in seconds)
 - `genre` - The genre of the music
-- `nomCreateur` - The name of the creator (artist or groupe) of the music
+- `creatorNames` - The name of the creator (artist or groupe) of the music
 
 ##### Status codes
 
@@ -407,7 +407,7 @@ The response body contains a JSON object with the following properties:
 
 #### Get all playlists of a user
 
-- `GET /playlists/user/{nomUtilisateur}`
+- `GET /playlists/user/{username}`
 
 Get all playlists of a user.
 
@@ -415,7 +415,7 @@ Get all playlists of a user.
 
 The request path must contain the following parameter:
 
-- `nomUtilisateur` - The username of the user
+- `username` - The username of the user
 
 ##### Response
 
@@ -545,47 +545,45 @@ The response body is empty.
 
 #### Get info on an artist
 
-- `GET /artists/{nomArtiste}`
+- `GET /artists/{artistName}`
 
-Get info on an artist. This route uses cache.
+Get info on an artist.
 
 ##### Request
 
 The request path must contain the following parameter:
 
-- `nomArtiste` - The name of the artist
+- `artistName` - The name of the artist
 
 ##### Response
 
 The response body contains a JSON object with the following properties:
 
-- `nomArtiste` - The name of the artist
-- `nom` - The last name of the artist
-- `prenom` - The first name of the artist
-- `dateDeNaissance` - The birth date of the artist (format: YYYY-MM-DD)
+- `artistName` - The name of the artist
+- `name` - The last name of the artist
+- `firstName` - The first name of the artist
+- `birthdate` - The birthdate of the artist (format: YYYY-MM-DD)
 - `email` - The email of the artist
 - `nomGroupe` - The name of the groupe of the artist (if any)
 
 with a JSON array with the following properties for all his/her musics:
 
 - `idMedia` - The ID of the music
-- `titre` - The title of the music
-- `dateDeSortie` - The release date of the music (format: YYYY-MM-DD)
-- `duree` - The duration of the music (in seconds)
+- `title` - The title of the music
+- `releaseDate` - The release date of the music (format: YYYY-MM-DD)
+- `duration` - The duration of the music (in seconds)
 - `genre` - The genre of the music
 
 with a JSON array with the following properties for all his/her albums:
 
 - `idMedia` - The ID of the album
-- `titre` - The title of the album
-- `dateDeSortie` - The release date of the album (format: YYYY-MM-DD)
+- `title` - The title of the album
+- `releaseDate` - The release date of the album (format: YYYY-MM-DD)
 
 ##### Status codes
 
 - `200` (OK) - The artist has been found
-- `304` (Not Modified) - The artist was not modified since.
 - `404` (Not Found) - The artist does not exist
-- `412` (Precondition Failed) - Artist was modified
 
 ---
 
@@ -593,7 +591,7 @@ with a JSON array with the following properties for all his/her albums:
 
 #### Get info on a groupe
 
-- `GET /groupes/{nomGroupe}`
+- `GET /groupes/{groupName}`
 
 Get info on a groupe.
 
@@ -601,33 +599,33 @@ Get info on a groupe.
 
 The request path must contain the following parameter:
 
-- `nomGroupe` - The name of the groupe
+- `groupName` - The name of the groupe
 
 ##### Response
 
 The response body contains a JSON object with the following properties:
 
-- `nomGroupe` - The name of the groupe
-- `dateDeNaissance` - The birth date of the artist (format: YYYY-MM-DD)
+- `groupName` - The name of the groupe
+- `birthdate` - The birthdate of the artist (format: YYYY-MM-DD)
 - `email` - The email of the artist
 
 with a JSON array with the following properties for all its artists:
 
-- `nomArtiste` - The name of the artist
+- `artistName` - The name of the artist
 
-with a JSON array with the following properties for all the groupe's musics:
+with a JSON array with the following properties for all the group's musics:
 
 - `idMedia` - The ID of the music
-- `titre` - The title of the music
-- `dateDeSortie` - The release date of the music (format: YYYY-MM-DD)
-- `duree` - The duration of the music (in seconds)
+- `title` - The title of the music
+- `releaseDate` - The release date of the music (format: YYYY-MM-DD)
+- `duration` - The duration of the music (in seconds)
 - `genre` - The genre of the music
 
-with a JSON array with the following properties for all the groupe's albums:
+with a JSON array with the following properties for all the group's albums:
 
 - `idMedia` - The ID of the album
-- `titre` - The title of the album
-- `dateDeSortie` - The release date of the album (format: YYYY-MM-DD)
+- `title` - The title of the album
+- `releaseDate` - The release date of the album (format: YYYY-MM-DD)
 
 ##### Status codes
 
@@ -642,7 +640,7 @@ with a JSON array with the following properties for all the groupe's albums:
 
 - `GET /albums/{idMedia}`
 
-Get info on an album. This route uses cache.
+Get info on an album.
 
 ##### Request
 
@@ -669,10 +667,8 @@ The response body contains a JSON object with the following properties:
 ##### Status codes
 
 - `200` (OK) - The album has been found
-- `304` (Not Modified) - The album was not modified since
 - `404` (Not Found) - The album does not exist
 - `400` (Bad Request) - The request is not correctly formatted
-- `412` (Precondition Failed) - Album was modified
 
 ---
 
@@ -680,7 +676,7 @@ The response body contains a JSON object with the following properties:
 
 #### Login
 
-- `POST /login/{nomUtilisateur}`
+- `POST /login/{username}`
 
 Login a user.
 
@@ -688,7 +684,7 @@ Login a user.
 
 The request path must contain the following parameter:
 
-- `nomUtilisateur` - The username of the user
+- `username` - The username of the user
 
 ##### Response
 
