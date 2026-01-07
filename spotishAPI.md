@@ -594,20 +594,23 @@ The request path must contain the following parameter:
 
 The response body contains a JSON object with the following properties:
 
-- `idMedia` - The ID of the album
-- `titre` - The title of the album
-- `dateDeSortie` - The release date of the album (format: YYYY-MM-DD)
-- `nomCreateur` - The name of the creator (artist or groupe) of the album
-
-with a JSON array with the following properties for all its musics:
-
-- `idMedia` - The ID of the music
-- `titre` - The title of the music
-- `dateDeSortie` - The release date of the music (format: YYYY-MM-DD)
-- `duree` - The duration of the music (in seconds)
-- `genre` - The genre of the music
+- `id` - The ID of the album
+- `title` - The title of the album
+- `releaseDate` - The release date of the album (format: YYYY-MM-DD)
+- `creatorName` - The name of the creator (artist or groupe) of the album
+- `musics` - A JSON array of musics in the album with the following properties:
+  - `idMedia` - The ID of the music
+  - `title` - The title of the music
+  - `releaseDate` - The release date of the music (format: YYYY-MM-DD)
+  - `duration` - The duration of the music (in seconds)
+  - `genre` - The genre of the music
+  - `creatorNames` - The name of the creators (artist or groupe) of the music. If multiple creators, they are separated by commas.
 
 ##### Status codes
+
+- `200` (OK) - The album has been found
+- `404` (Not Found) - The album does not exist
+- `400` (Bad Request) - The request is not correctly formatted
 
 ---
 
