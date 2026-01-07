@@ -22,6 +22,8 @@ The API is based on the CRUD pattern. It has the following operations:
 - Get 10 last listened musics
 - Get 3 most listened musics
 - Get a music by its ID
+- Get a music by its title
+- Get all musics
 - Get all liked musics
 - Like a music
 
@@ -208,6 +210,62 @@ The request path must contain the following parameter:
 ##### Response
 
 The response body contains a JSON object with the following properties:
+
+- `musicId` - The ID of the music
+- `title` - The title of the music
+- `releaseDate` - The release date of the music (format: YYYY-MM-DD)
+- `duration` - The duration of the music (in seconds)
+- `genre` - The genre of the music
+- `creatorNames` - The name of the creators (artist or groupe) of the music. If multiple creators, they are separated by commas.
+
+##### Status codes
+
+- `200` (OK) - The music has been found
+- `404` (Not Found) - The music does not exist
+- `400` (Bad Request) - The request is not correctly formatted
+
+#### Get a music by its title
+
+- `GET /music/{title}`
+
+Get a music by its title.
+
+##### Request
+
+The request path must contain the following parameter:
+
+- `title` : title of the music
+
+##### Response
+
+The response body contains a JSON object with the following properties:
+
+- `musicId` - The ID of the music
+- `title` - The title of the music
+- `releaseDate` - The release date of the music (format: YYYY-MM-DD)
+- `duration` - The duration of the music (in seconds)
+- `genre` - The genre of the music
+- `creatorNames` - The name of the creators (artist or groupe) of the music. If multiple creators, they are separated by commas.
+
+##### Status codes
+
+- `200` (OK) - The music has been found
+- `404` (Not Found) - The music does not exist
+- `400` (Bad Request) - The request is not correctly formatted
+
+#### Get all musics
+
+- `GET /music/all`
+
+Get all musics in the database.
+
+##### Request
+
+The request body is empty.
+
+##### Response
+
+The response body contains a JSON array with the following properties:
 
 - `musicId` - The ID of the music
 - `title` - The title of the music
@@ -489,7 +547,7 @@ The response body is empty.
 
 - `GET /artists/{nomArtiste}`
 
-Get info on an artist.
+Get info on an artist. This route uses cache.
 
 ##### Request
 
@@ -525,7 +583,9 @@ with a JSON array with the following properties for all his/her albums:
 ##### Status codes
 
 - `200` (OK) - The artist has been found
+- `304` (Not Modified) - The artist was not modified since.
 - `404` (Not Found) - The artist does not exist
+- `412` (Precondition Failed) - Artist was modified
 
 ---
 
@@ -582,7 +642,7 @@ with a JSON array with the following properties for all the groupe's albums:
 
 - `GET /albums/{idMedia}`
 
-Get info on an album.
+Get info on an album. This route uses cache.
 
 ##### Request
 
@@ -609,8 +669,10 @@ The response body contains a JSON object with the following properties:
 ##### Status codes
 
 - `200` (OK) - The album has been found
+- `304` (Not Modified) - The album was not modified since
 - `404` (Not Found) - The album does not exist
 - `400` (Bad Request) - The request is not correctly formatted
+- `412` (Precondition Failed) - Album was modified
 
 ---
 
