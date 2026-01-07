@@ -10,6 +10,9 @@ import io.javalin.http.NotFoundResponse;
 import io.javalin.http.UnauthorizedResponse;
 
 import io.javalin.security.RouteRole;
+import ch.heigvd.album.AlbumController;
+import ch.heigvd.album.AlbumRepository;
+import ch.heigvd.album.AlbumService;
 import ch.heigvd.auth.AuthController;
 import ch.heigvd.music.MusicController;
 import ch.heigvd.music.MusicRepository;
@@ -61,6 +64,11 @@ public class App {
     PlaylistService playlistService = new PlaylistService(ds, playlistRepository, userRepository, musicRepository);
     PlaylistController playlistController = new PlaylistController(playlistService);
 
+    // Album related ressources
+    AlbumRepository albumRepository = new AlbumRepository();
+    AlbumService albumService = new AlbumService(ds, albumRepository);
+    AlbumController albumController = new AlbumController(albumService);
+
     // Access management
     // We check the required roles before accessing every routes
     app.beforeMatched(ctx -> {
@@ -100,6 +108,9 @@ public class App {
     app.post("playlists/{playlistId}/musics/{idMedia}", playlistController::addMusicToPlaylist, Role.LOGGED_IN);
     app.delete("playlists/{playlistId}/musics/{idMedia}", playlistController::removeMusicFromPlaylist,
         Role.LOGGED_IN);
+
+    // Album related routes
+    app.get("/albums/{idMedia}", albumController::getAlbum, Role.OPEN, Role.LOGGED_IN);
 
     app.start(PORT);
   }
