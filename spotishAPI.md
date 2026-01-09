@@ -147,6 +147,10 @@ The response body contains a JSON array with the following properties:
 
 Get 10 last listened musics of current user. Uses cache expiration model.
 
+`Cache-Control: max-age=<number of seconds>`
+
+`<number of seconds>` = 1 minutes = 60 seconds, because the last listened musics can change frequently.
+
 ##### Request
 
 The request body is empty. The current user is identified by the `user` cookie.
@@ -172,7 +176,11 @@ The response body contains a JSON array with the following properties:
 
 - `GET /musics/most-listened`
 
-Get 3 most listened musics of current user.
+Get 3 most listened musics of current user. Uses cache expiration model.
+
+`Cache-Control: max-age=<number of seconds>`
+
+`<number of seconds>` = 10 minutes = 600 seconds, because the most listened musics can change frequently.
 
 ##### Request
 
@@ -228,7 +236,11 @@ The response body contains a JSON object with the following properties:
 
 - `GET /musics/{title}`
 
-Get a music by its title.
+Get a music by its title. Uses cache expiration model.
+
+`Cache-Control: max-age=<number of seconds>`
+
+`<number of seconds>` = 30 minutes =  1800 seconds, because the music title data does not change frequently.
 
 ##### Request
 
@@ -257,7 +269,11 @@ The response body contains a JSON object with the following properties:
 
 - `GET /musics`
 
-Get all musics in the database.
+Get all musics in the database. Uses cache expiration model.
+
+`Cache-Control: max-age=<number of seconds>`
+
+`<number of seconds>` = 1 hour = 3600 seconds, because the music data does not change frequently.
 
 ##### Request
 
@@ -284,7 +300,11 @@ The response body contains a JSON array with the following properties:
 
 - `GET /musics/liked`
 
-Get all liked musics of current user.
+Get all liked musics of current user. Uses cache expiration model.
+
+`Cache-Control: max-age=<number of seconds>`
+
+`<number of seconds>` = 5 minutes = 300 seconds, because the liked musics can change frequently.
 
 ##### Request
 
@@ -347,7 +367,7 @@ The response body contains a JSON object with the following properties:
 
 - `POST /playlists`
 
-Create a new playlist.
+Create a new playlist. Uses cache validation model.
 
 ##### Request
 
@@ -369,9 +389,11 @@ The response body is empty.
 ##### Status codes
 
 - `201` (Created) - The playlist has been successfully created
+- `304` (Not Modified) - The playlist has not been created because it already exists and the cache is still valid
 - `400` (Bad Request) - The request body is invalid
 - `401` (Unauthorized) - The user is not logged in
 - `409` (Conflict) - The playlist already exists
+- `412` (Precondition Failed) - The cache is not valid
 
 #### Get a playlist by its ID
 
@@ -409,7 +431,7 @@ The response body contains a JSON object with the following properties:
 
 - `GET /playlists/user/{username}`
 
-Get all playlists of a user.
+Get all playlists of a user. Uses cache validation model.
 
 ##### Request
 
@@ -435,13 +457,15 @@ The response body contains a JSON array with all playlists of the user with the 
 ##### Status codes
 
 - `200` (OK) - The playlists have been found
+- `304` (Not Modified) - The playlists have not been retrieved because the cache is still valid
 - `404` (Not Found) - The user does not exist or has no playlists
+- `412` (Precondition Failed) - The cache is not valid
 
 #### Get all followed playlists
 
 - `GET /playlists/followed`
 
-Get all followed playlists of current user.
+Get all followed playlists of current user. Uses cache validation model.
 
 ##### Request
 
@@ -465,8 +489,10 @@ The response body contains a JSON array of followed playlists with the following
 ##### Status codes
 
 - `200` (OK) - The playlists have been found
+- `304` (Not Modified) - The playlists have not been retrieved because the cache is still valid
 - `401` (Unauthorized) - The user is not logged in
 - `404` (Not Found) - No followed playlists found for the user
+- `412` (Precondition Failed) - The cache is not valid
 
 #### Follow a playlist
 
@@ -495,7 +521,7 @@ The response body is empty.
 
 - `POST /playlists/{idPlaylist}/musics/{idMedia}`
 
-Add music to a playlist for the current user.
+Add music to a playlist for the current user. Uses cache validation model.
 
 ##### Request
 
@@ -511,15 +537,17 @@ The response body is empty.
 ##### Status codes
 
 - `201` (Created) - The music has been successfully added to the playlist
+- `304` (Not Modified) - The music has not been added to the playlist because it already exists in the playlist and the cache is still valid
 - `400` (Bad Request) - The request is invalid
 - `401` (Unauthorized) - The user is not logged in
 - `404` (Not Found) - The playlist or music does not exist
+- `412` (Precondition Failed) - The cache is not valid
 
 #### Delete music from a playlist
 
 - `DELETE /playlists/{idPlaylist}/musics/{idMedia}`
 
-Delete music from a playlist for the current user.
+Delete music from a playlist for the current user. Uses cache validation model.
 
 ##### Request
 
@@ -535,9 +563,11 @@ The response body is empty.
 ##### Status codes
 
 - `204` (No Content) - The music has been successfully deleted from the playlist
+- `304` (Not Modified) - The music has not been deleted from the playlist because it does not exist in the playlist and the cache is still valid
 - `400` (Bad Request) - The request is invalid
 - `401` (Unauthorized) - The user is not logged in
 - `404` (Not Found) - The playlist or music does not exist
+- `412` (Precondition Failed) - The cache is not valid
 
 ---
 
