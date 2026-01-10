@@ -46,10 +46,10 @@ public class PlaylistController {
 
     // Store the last modification date of the user
     LocalDateTime now = LocalDateTime.now();
-    usersCache.put(titleCacheKey(playlist.name()), now);
+    usersCache.put(playlistCacheKey(playlist.id()), now);
 
     // Invalidate the cache for all users
-    usersCache.remove(ALL_PLAYLISTS_CACHE_KEY);
+    usersCache.remove(allPlaylistsCacheKey(ctx.cookie("userNameCookie")));
 
     // Add the last modification date to the response
     ctx.header("Last-Modified", String.valueOf(now));
@@ -68,7 +68,29 @@ public class PlaylistController {
         .check(id -> id > 0, "Playlist ID must be a positive number")
         .get();
 
+    // Get the last known modification date of the user
+    LocalDateTime lastKnownModification =
+      ctx.headerAsClass("If-Modified-Since", LocalDateTime.class).getOrDefault(null);
+
+    // Check if the user has been modified since the last known modification date
+    if (lastKnownModification != null && usersCache.get(playlistCacheKey(playlistId)).equals(lastKnownModification)) {
+      throw new NotModifiedResponse();
+    }
+
     Playlist playlist = playlistService.getPlaylist(playlistId);
+
+    LocalDateTime now;
+    if (usersCache.containsKey(playlistCacheKey(playlistId))) {
+      // If it is already in the cache, get the last modification date
+      now = usersCache.get(playlistCacheKey(playlistId));
+    } else {
+      // Otherwise, set to the current date
+      now = LocalDateTime.now();
+      usersCache.put(playlistCacheKey(playlistId), now);
+    }
+
+    // Add the last modification date to the response
+    ctx.header("Last-Modified", String.valueOf(now));
 
     ctx.json(playlist);
   }
@@ -164,6 +186,9 @@ public class PlaylistController {
 
     playlistService.followPlaylist(username, playlistId);
 
+    // Invalidate the cache for all users
+    usersCache.remove(followedAllPlaylistsCacheKey(username)); // TODO: I don't have all usernames here to remove their cache
+
     // 201 == Created
     ctx.status(201);
   }
@@ -188,7 +213,8 @@ public class PlaylistController {
 
     // Check if the user has been modified since the last known modification date
     if (lastKnownModification != null
-            && !usersCache.get(musicCacheKey(username, playlistId, musicId)).equals(lastKnownModification)) {
+            //&& usersCache.get(playlistCacheKey(playlistId)) != null
+            && !usersCache.get(playlistCacheKey(playlistId)).equals(lastKnownModification)) {
       throw new PreconditionFailedResponse();
     }
 
@@ -196,10 +222,10 @@ public class PlaylistController {
 
     // Store the last modification date of the user
     LocalDateTime now = LocalDateTime.now();
-    usersCache.put(musicCacheKey(username, playlistId, musicId), now);
+    usersCache.put(playlistCacheKey(playlistId), now);
 
     // Invalidate the cache for all users
-    usersCache.remove(allPlaylistsCacheKey()); // TODO: I don't have all usernames here to remove their cache
+    usersCache.remove(allPlaylistsCacheKey(username)); // TODO: I don't have all usernames here to remove their cache
 
     // Add the last modification date to the response
     ctx.header("Last-Modified", String.valueOf(now));
@@ -227,17 +253,23 @@ public class PlaylistController {
       ctx.headerAsClass("If-Unmodified-Since", LocalDateTime.class).getOrDefault(null);
 
     // Check if the user has been modified since the last known modification date
-    if (lastKnownModification != null && !usersCache.get(musicCacheKey(username, playlistId, musicId)).equals(lastKnownModification)) {
+    if (lastKnownModification != null
+            //&& usersCache.get(playlistCacheKey(playlistId)) != null
+            && !usersCache.get(playlistCacheKey(playlistId)).equals(lastKnownModification)) {
       throw new PreconditionFailedResponse();
     }
 
     playlistService.removeMusicFromPlaylist(username, playlistId, musicId);
 
-    // Invalidate the cache for the user
-    usersCache.remove(id); // TODO: Use a proper cache key here
+    // Invalidate the cache for the user and update the playlist timestamp
+    LocalDateTime now = LocalDateTime.now();
+    usersCache.put(playlistCacheKey(playlistId), now);
 
     // Invalidate the cache for all users
-    usersCache.remove(allPlaylistsCacheKey()); // TODO: I don't have all usernames here to remove their cache
+    usersCache.remove(allPlaylistsCacheKey(username)); // TODO: I don't have all usernames here to remove their cache
+
+    // Add the last modification date to the response
+    ctx.header("Last-Modified", String.valueOf(now));
 
     // 204 == No Content
     ctx.status(204);
@@ -259,6 +291,10 @@ public class PlaylistController {
    */
   private String followedCacheKey(String username) {
     return "followed:" + username;
+  }
+
+  private String playlistCacheKey(Long playlistId) {
+    return "playlist:" + playlistId;
   }
 
   /**
