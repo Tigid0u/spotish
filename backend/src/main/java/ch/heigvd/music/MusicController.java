@@ -8,6 +8,12 @@ import io.javalin.http.Context;
 public class MusicController {
   private final MusicService musicService;
 
+  private final static int TEN_LAST_LISTENED_CACHE_MAX_AGE_SECONDS = 60;
+  private final static int TEN_MOST_LISTENED_CACHE_MAX_AGE_SECONDS = 60;//600; // 10 minutes
+  private final static int MUSIC_ID_CACHE_MAX_AGE_SECONDS = 60;//1800; // 30 minutes
+  private final static int ALL_MUSICS_CACHE_MAX_AGE_SECONDS = 3600; // 1 hour
+  private final static int LIKED_MUSICS_CACHE_MAX_AGE_SECONDS = 60;//300; // 5 minutes
+
   public MusicController(MusicService musicService) {
     this.musicService = musicService;
   }
@@ -21,6 +27,9 @@ public class MusicController {
     Long musicId = ctx.pathParamAsClass("idMedia", Long.class).check(id -> id >= 0, "idMedia must be positive").get();
 
     Music music = musicService.getMusic(musicId);
+
+    // Cache the response for MAX_AGE_SECONDS seconds
+    ctx.header("Cache-Control", "private, max-age=" + MUSIC_ID_CACHE_MAX_AGE_SECONDS);
 
     ctx.json(music);
   }
@@ -38,6 +47,8 @@ public class MusicController {
 
     List<Music> musics = musicService.getTenLastListenedMusics(username);
 
+    ctx.header("Cache-Control", "private, max-age=" + TEN_LAST_LISTENED_CACHE_MAX_AGE_SECONDS);
+
     ctx.json(musics);
   }
 
@@ -54,6 +65,8 @@ public class MusicController {
 
     List<Music> musics = musicService.getTenMostListenedMusics(username);
 
+    ctx.header("Cache-Control", "private, max-age=" + TEN_MOST_LISTENED_CACHE_MAX_AGE_SECONDS);
+
     ctx.json(musics);
   }
 
@@ -69,6 +82,8 @@ public class MusicController {
     String username = ctx.cookie("userNameCookie");
 
     List<Music> musics = musicService.getLikedMusics(username);
+
+    ctx.header("Cache-Control", "private, max-age=" + LIKED_MUSICS_CACHE_MAX_AGE_SECONDS);
 
     ctx.json(musics);
   }
