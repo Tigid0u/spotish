@@ -30,7 +30,7 @@ The API is based on the CRUD pattern. It has the following operations:
 **Playlist:**
 
 - Create playlist (uses cache validation model)
-- Get a playlist by its ID
+- Get a playlist by its ID (uses cache validation model)
 - Get all playlists of a user (uses cache validation model)
 - Get all followed playlists (uses cache validation model)
 - Follow a playlist
@@ -64,8 +64,8 @@ Create a new user.
 The request body must contain a JSON object with the following properties:
 
 - `username` - The username of the user
-- `name` - The last name of the user
-- `firstName` - The first name of the user
+- `lname` - The last name of the user
+- `fname` - The first name of the user
 - `birthdate` - The birthdate of the user (format: YYYY-MM-DD)
 - `email` - The email of the user
 
@@ -74,8 +74,8 @@ The request body must contain a JSON object with the following properties:
 The response body contains a JSON object with the following properties:
 
 - `username` - The username of the user
-- `name` - The last name of the user
-- `firstName` - The first name of the user
+- `lname` - The last name of the user
+- `fname` - The first name of the user
 - `birthdate` - The birthdate of the user (format: YYYY-MM-DD)
 - `email` - The email of the user
 
@@ -102,8 +102,8 @@ The request path must contain the following parameter:
 The response body contains a JSON object with the following properties:
 
 - `username` - The username of the user
-- `name` - The last name of the user
-- `firstName` - The first name of the user
+- `lname` - The last name of the user
+- `fname` - The first name of the user
 - `birthdate` - The birthdate of the user (format: YYYY-MM-DD)
 - `email` - The email of the user
 
@@ -127,8 +127,8 @@ The request body is empty.
 The response body contains a JSON array with the following properties:
 
 - `username` - The username of the user
-- `name` - The last name of the user
-- `firstName` - The first name of the user
+- `lname` - The last name of the user
+- `fname` - The first name of the user
 - `birthdate` - The birthdate of the user (format: YYYY-MM-DD)
 - `email` - The email of the user
 
@@ -314,8 +314,7 @@ The request body is empty. The current user is identified by the `user` cookie.
 
 The response body contains a JSON array with the following properties:
 
-- `username` - The username of the user
-- `idMedia` - The ID of the music
+- `musicId` - The ID of the music
 - `title` - The title of the music
 - `releaseDate` - The release date of the music (format: YYYY-MM-DD)
 - `duration` - The duration of the music (in seconds)
@@ -344,8 +343,7 @@ The request path must contain the following parameter:
 
 The response body contains a JSON object with the following properties:
 
-- `username` - The username of the user
-- `idMedia` - The ID of the music
+- `musicId` - The ID of the music
 - `title` - The title of the music
 - `releaseDate` - The release date of the music (format: YYYY-MM-DD)
 - `duration` - The duration of the music (in seconds)
@@ -389,17 +387,15 @@ The response body is empty.
 ##### Status codes
 
 - `201` (Created) - The playlist has been successfully created
-- `304` (Not Modified) - The playlist has not been created because it already exists and the cache is still valid
 - `400` (Bad Request) - The request body is invalid
 - `401` (Unauthorized) - The user is not logged in
 - `409` (Conflict) - The playlist already exists
-- `412` (Precondition Failed) - The cache is not valid
 
 #### Get a playlist by its ID
 
 - `GET /playlists/{idPlaylist}`
 
-Get a playlist by its ID.
+Get a playlist by its ID. Uses cache validation model.
 
 ##### Request
 
@@ -415,7 +411,7 @@ The response body contains a JSON object with the following properties:
 - `name` - The name of the playlist
 - `description` - The description of the playlist
 - `musics` - A JSON array of musics in the playlist with the following properties:
-  - `idMedia` - The ID of the music
+  - `musicId` - The ID of the music
   - `title` - The title of the music
   - `releaseDate` - The release date of the music (format: YYYY-MM-DD)
   - `duration` - The duration of the music (in seconds)
@@ -425,6 +421,7 @@ The response body contains a JSON object with the following properties:
 ##### Status codes
 
 - `200` (OK) - The playlist has been found
+- `304` (Not Modified) - The playlist has not been retrieved because the cache is still valid
 - `404` (Not Found) - The playlist does not exist
 
 #### Get all playlists of a user
@@ -447,7 +444,7 @@ The response body contains a JSON array with all playlists of the user with the 
 - `name` - The name of the playlist
 - `description` - The description of the playlist
 - `musics` - A JSON array of musics in the playlist with the following properties:
-  - `idMedia` - The ID of the music
+  - `musicId` - The ID of the music
   - `title` - The title of the music
   - `releaseDate` - The release date of the music (format: YYYY-MM-DD)
   - `duration` - The duration of the music (in seconds)
@@ -459,7 +456,6 @@ The response body contains a JSON array with all playlists of the user with the 
 - `200` (OK) - The playlists have been found
 - `304` (Not Modified) - The playlists have not been retrieved because the cache is still valid
 - `404` (Not Found) - The user does not exist or has no playlists
-- `412` (Precondition Failed) - The cache is not valid
 
 #### Get all followed playlists
 
@@ -479,7 +475,7 @@ The response body contains a JSON array of followed playlists with the following
 - `name` - The name of the playlist
 - `description` - The description of the playlist
 - `musics` - A JSON array of musics in the playlist with the following properties:
-  - `idMedia` - The ID of the music
+  - `musicId` - The ID of the music
   - `title` - The title of the music
   - `releaseDate` - The release date of the music (format: YYYY-MM-DD)
   - `duration` - The duration of the music (in seconds)
@@ -492,7 +488,6 @@ The response body contains a JSON array of followed playlists with the following
 - `304` (Not Modified) - The playlists have not been retrieved because the cache is still valid
 - `401` (Unauthorized) - The user is not logged in
 - `404` (Not Found) - No followed playlists found for the user
-- `412` (Precondition Failed) - The cache is not valid
 
 #### Follow a playlist
 
@@ -537,7 +532,6 @@ The response body is empty.
 ##### Status codes
 
 - `201` (Created) - The music has been successfully added to the playlist
-- `304` (Not Modified) - The music has not been added to the playlist because it already exists in the playlist and the cache is still valid
 - `400` (Bad Request) - The request is invalid
 - `401` (Unauthorized) - The user is not logged in
 - `404` (Not Found) - The playlist or music does not exist
@@ -563,7 +557,6 @@ The response body is empty.
 ##### Status codes
 
 - `204` (No Content) - The music has been successfully deleted from the playlist
-- `304` (Not Modified) - The music has not been deleted from the playlist because it does not exist in the playlist and the cache is still valid
 - `400` (Bad Request) - The request is invalid
 - `401` (Unauthorized) - The user is not logged in
 - `404` (Not Found) - The playlist or music does not exist
@@ -590,25 +583,34 @@ The request path must contain the following parameter:
 The response body contains a JSON object with the following properties:
 
 - `artistName` - The name of the artist
-- `name` - The last name of the artist
-- `firstName` - The first name of the artist
+- `lname` - The last name of the artist
+- `fname` - The first name of the artist
 - `birthdate` - The birthdate of the artist (format: YYYY-MM-DD)
 - `email` - The email of the artist
-- `nomGroupe` - The name of the groupe of the artist (if any)
+- `groupName` - The name of the groupe of the artist (if any)
+
+with a JSON array with the following properties for all his/her albums:
+
+- `id` - The ID of the album
+- `title` - The title of the album
+- `releaseDate` - The release date of the album (format: YYYY-MM-DD)
+- `creatorName` - The name of the creator (artist or groupe) of the album
+- `musics` - A JSON array of musics in the album with the following properties:
+  - `musicId` - The ID of the music
+  - `title` - The title of the music
+  - `releaseDate` - The release date of the music (format: YYYY-MM-DD)
+  - `duration` - The duration of the music (in seconds)
+  - `genre` - The genre of the music
+  - `creatorNames` - The name of the creators (artist or groupe) of the music. If multiple creators, they are separated by commas.
 
 with a JSON array with the following properties for all his/her musics:
 
-- `idMedia` - The ID of the music
+- `musicId` - The ID of the music
 - `title` - The title of the music
 - `releaseDate` - The release date of the music (format: YYYY-MM-DD)
 - `duration` - The duration of the music (in seconds)
 - `genre` - The genre of the music
-
-with a JSON array with the following properties for all his/her albums:
-
-- `idMedia` - The ID of the album
-- `title` - The title of the album
-- `releaseDate` - The release date of the album (format: YYYY-MM-DD)
+- `creatorNames` - The name of the creators (artist or groupe) of the music. If multiple creators, they are separated by commas.
 
 ##### Status codes
 
@@ -636,26 +638,39 @@ The request path must contain the following parameter:
 The response body contains a JSON object with the following properties:
 
 - `groupName` - The name of the groupe
-- `birthdate` - The birthdate of the artist (format: YYYY-MM-DD)
 - `email` - The email of the artist
 
 with a JSON array with the following properties for all its artists:
 
 - `artistName` - The name of the artist
+- `lname` - The last name of the artist
+- `fname` - The first name of the artist
+- `birthdate` - The birthdate of the artist (format: YYYY-MM-DD)
+- `email` - The email of the artist
+- `groupName` - The name of the groupe of the artist (if any)
+
+with a JSON array with the following properties for all the group's albums:
+
+- `id` - The ID of the album
+- `title` - The title of the album
+- `releaseDate` - The release date of the album (format: YYYY-MM-DD)
+- `creatorName` - The name of the creator (artist or groupe) of the album
+- `musics` - A JSON array of musics in the album with the following properties :
+  - `musicId` - The ID of the music
+  - `title` - The title of the music
+  - `releaseDate` - The release date of the music (format: YYYY-MM-DD)
+  - `duration` - The duration of the music (in seconds)
+  - `genre` - The genre of the music
+  - `creatorNames` - The name of the creators (artist or groupe) of the music. If multiple creators, they are separated by commas.
 
 with a JSON array with the following properties for all the group's musics:
 
-- `idMedia` - The ID of the music
+- `musicId` - The ID of the music
 - `title` - The title of the music
 - `releaseDate` - The release date of the music (format: YYYY-MM-DD)
 - `duration` - The duration of the music (in seconds)
 - `genre` - The genre of the music
-
-with a JSON array with the following properties for all the group's albums:
-
-- `idMedia` - The ID of the album
-- `title` - The title of the album
-- `releaseDate` - The release date of the album (format: YYYY-MM-DD)
+- `creatorNames` - The name of the creators (artist or groupe) of the music. If multiple creators, they are separated by commas.
 
 ##### Status codes
 
@@ -687,7 +702,7 @@ The response body contains a JSON object with the following properties:
 - `releaseDate` - The release date of the album (format: YYYY-MM-DD)
 - `creatorName` - The name of the creator (artist or groupe) of the album
 - `musics` - A JSON array of musics in the album with the following properties:
-  - `idMedia` - The ID of the music
+  - `musicId` - The ID of the music
   - `title` - The title of the music
   - `releaseDate` - The release date of the music (format: YYYY-MM-DD)
   - `duration` - The duration of the music (in seconds)
