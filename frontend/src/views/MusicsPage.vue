@@ -95,7 +95,15 @@ const isLiked = (musicId) => {
               <div class="card-body">
                 <h5 class="card-title">{{ music.title }}</h5>
                 <p class="card-text text-muted mb-2">
-                  <i class="bi bi-person"></i> {{ music.creatorNames }}
+                  <i class="bi bi-person"></i>
+                  <template v-if="music.creatorNames">
+                    <template v-for="(creator, idx) in music.creatorNames.split(',')" :key="idx">
+                      <router-link :to="`/creators/${creator.trim()}`" class="text-decoration-none">
+                        {{ creator.trim() }}
+                      </router-link>
+                      <span v-if="idx < music.creatorNames.split(',').length - 1">, </span>
+                    </template>
+                  </template>
                 </p>
                 <p class="card-text">
                   <small class="text-muted">
@@ -136,7 +144,15 @@ const isLiked = (musicId) => {
               <div class="card-body">
                 <h5 class="card-title">{{ music.title }}</h5>
                 <p class="card-text text-muted mb-2">
-                  <i class="bi bi-person"></i> {{ music.creatorNames }}
+                  <i class="bi bi-person"></i>
+                  <template v-if="music.creatorNames">
+                    <template v-for="(creator, idx) in music.creatorNames.split(',')" :key="idx">
+                      <router-link :to="`/creators/${creator.trim()}`" class="text-decoration-none">
+                        {{ creator.trim() }}
+                      </router-link>
+                      <span v-if="idx < music.creatorNames.split(',').length - 1">, </span>
+                    </template>
+                  </template>
                 </p>
                 <p class="card-text">
                   <small class="text-muted">
