@@ -107,6 +107,7 @@ public class App {
     app.post("/logout", authController::logoutUser, Role.LOGGED_IN, Role.OPEN);
 
     // Music related routes
+    app.get("/musics", musicController::getAll, Role.OPEN, Role.LOGGED_IN);
     app.get("/musics/last-listened", musicController::getTenLastListened, Role.LOGGED_IN);
     app.get("/musics/most-listened", musicController::getTenMostListened, Role.LOGGED_IN);
     app.get("/musics/liked", musicController::getLiked, Role.LOGGED_IN);
