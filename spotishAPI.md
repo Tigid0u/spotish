@@ -295,7 +295,6 @@ Create a new playlist.
 
 The request body must contain a JSON object with the following properties:
 
-- `id` - The ID of the playlist
 - `name` - The name of the playlist
 - `decription` - The description of the playlist
 - `musics` - A JSON array of music IDs to be added to the playlist that must contain at least one music ID and is structured as follows:
@@ -483,96 +482,41 @@ The response body is empty.
 
 ---
 
-### Artist
+### Creator
 
-#### Get info on an artist
+#### Get info on a creator (artist or groupe)
 
-- `GET /artists/{nomArtiste}`
-
-Get info on an artist.
+- `GET /creators/{creatorName}`
 
 ##### Request
 
 The request path must contain the following parameter:
 
-- `nomArtiste` - The name of the artist
+- `creatorName` - The name of the creator (artist or groupe)
 
 ##### Response
 
 The response body contains a JSON object with the following properties:
 
-- `nomArtiste` - The name of the artist
-- `nom` - The last name of the artist
-- `prenom` - The first name of the artist
-- `dateDeNaissance` - The birth date of the artist (format: YYYY-MM-DD)
-- `email` - The email of the artist
-- `nomGroupe` - The name of the groupe of the artist (if any)
-
-with a JSON array with the following properties for all his/her musics:
-
-- `idMedia` - The ID of the music
-- `titre` - The title of the music
-- `dateDeSortie` - The release date of the music (format: YYYY-MM-DD)
-- `duree` - The duration of the music (in seconds)
-- `genre` - The genre of the music
-
-with a JSON array with the following properties for all his/her albums:
-
-- `idMedia` - The ID of the album
-- `titre` - The title of the album
-- `dateDeSortie` - The release date of the album (format: YYYY-MM-DD)
+- `creatorName` - The name of the creator
+- `artistList` - A JSON array with the artists names of the groupe. If null, the creator is an artist.
+- `albums` - A JSON array of albums of the creator with the following properties:
+  - `id` - The ID of the album
+  - `title` - The title of the album
+  - `releaseDate` - The release date of the album (format: YYYY-MM-DD)
+  - `musics` - A JSON array of musics in the album with the following properties:
+    - `idMedia` - The ID of the music
+    - `title` - The title of the music
+    - `releaseDate` - The release date of the music (format: YYYY-MM-DD)
+    - `duration` - The duration of the music (in seconds)
+    - `genre` - The genre of the music
+    - `creatorNames` - The name of the creators (artist or groupe) of the music. If multiple creators, they are separated by commas.
 
 ##### Status codes
 
-- `200` (OK) - The artist has been found
-- `404` (Not Found) - The artist does not exist
-
----
-
-### Groupe
-
-#### Get info on a groupe
-
-- `GET /groupes/{nomGroupe}`
-
-Get info on a groupe.
-
-##### Request
-
-The request path must contain the following parameter:
-
-- `nomGroupe` - The name of the groupe
-
-##### Response
-
-The response body contains a JSON object with the following properties:
-
-- `nomGroupe` - The name of the groupe
-- `dateDeNaissance` - The birth date of the artist (format: YYYY-MM-DD)
-- `email` - The email of the artist
-
-with a JSON array with the following properties for all its artists:
-
-- `nomArtiste` - The name of the artist
-
-with a JSON array with the following properties for all the groupe's musics:
-
-- `idMedia` - The ID of the music
-- `titre` - The title of the music
-- `dateDeSortie` - The release date of the music (format: YYYY-MM-DD)
-- `duree` - The duration of the music (in seconds)
-- `genre` - The genre of the music
-
-with a JSON array with the following properties for all the groupe's albums:
-
-- `idMedia` - The ID of the album
-- `titre` - The title of the album
-- `dateDeSortie` - The release date of the album (format: YYYY-MM-DD)
-
-##### Status codes
-
-- `200` (OK) - The groupe has been found
-- `404` (Not Found) - The groupe does not exist
+- `200` (OK) - The creator has been found
+- `404` (Not Found) - The creator does not exist
+- `400` (Bad Request) - The request is not correctly formatted
 
 ---
 
