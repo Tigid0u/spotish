@@ -104,9 +104,9 @@ public class App {
     app.get("/playlists/followed", playlistController::getFollowedPlaylists, Role.LOGGED_IN);
     app.get("/playlists/{playlistId}", playlistController::getPlaylist, Role.OPEN, Role.LOGGED_IN);
     app.post("/playlists", playlistController::createPlaylist, Role.LOGGED_IN);
-    app.post("playlists/followed/{playlistId}", playlistController::followPlaylist, Role.LOGGED_IN);
-    app.post("playlists/{playlistId}/musics/{idMedia}", playlistController::addMusicToPlaylist, Role.LOGGED_IN);
-    app.delete("playlists/{playlistId}/musics/{idMedia}", playlistController::removeMusicFromPlaylist,
+    app.post("/playlists/followed/{playlistId}", playlistController::followPlaylist, Role.LOGGED_IN);
+    app.post("/playlists/{playlistId}/musics/{idMedia}", playlistController::addMusicToPlaylist, Role.LOGGED_IN);
+    app.delete("/playlists/{playlistId}/musics/{idMedia}", playlistController::removeMusicFromPlaylist,
         Role.LOGGED_IN);
 
     // Album related routes
