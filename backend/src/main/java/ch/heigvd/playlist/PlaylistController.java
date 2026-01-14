@@ -42,11 +42,11 @@ public class PlaylistController {
     // Add username of the user as the creater of the playlist
     playlist = playlist.setCreatorName(ctx.cookie("userNameCookie"));
 
-    playlistService.createPlaylist(playlist);
+    Long playlistId = playlistService.createPlaylist(playlist);
 
     // Store the last modification date of the user
     LocalDateTime now = LocalDateTime.now();
-    usersCache.put(playlistCacheKey(playlist.id()), now);
+    usersCache.put(playlistCacheKey(playlistId), now);
 
     // Invalidate the cache for all users
     usersCache.remove(allPlaylistsCacheKey(ctx.cookie("userNameCookie")));

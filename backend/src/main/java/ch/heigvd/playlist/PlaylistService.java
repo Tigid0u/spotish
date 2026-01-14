@@ -34,14 +34,14 @@ public class PlaylistService {
    * @param playlist The playlist to insert.
    * @throws ConflictResponse if a playlist with the same ID already exists.
    */
-  public void createPlaylist(Playlist playlist) {
+  public Long createPlaylist(Playlist playlist) {
     try (Connection conn = ds.getConnection()) {
       // Check if playlist with the same ID already exists before inserting
       if (playlist.id() != null && playlistRepo.exists(conn, playlist.id())) {
         throw new ConflictResponse("Playlist with ID " + playlist.id() + " already exists");
       }
 
-      playlistRepo.createPlaylist(conn, playlist);
+      return playlistRepo.createPlaylist(conn, playlist);
     } catch (SQLException e) {
       throw new RuntimeException(e);
     }
