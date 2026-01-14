@@ -13,7 +13,12 @@ import io.javalin.security.RouteRole;
 import ch.heigvd.album.AlbumController;
 import ch.heigvd.album.AlbumRepository;
 import ch.heigvd.album.AlbumService;
+import ch.heigvd.artist.ArtistRepository;
 import ch.heigvd.auth.AuthController;
+import ch.heigvd.creator.CreatorController;
+import ch.heigvd.creator.CreatorRepository;
+import ch.heigvd.creator.CreatorService;
+import ch.heigvd.group.GroupRepository;
 import ch.heigvd.music.MusicController;
 import ch.heigvd.music.MusicRepository;
 import ch.heigvd.music.MusicService;
@@ -69,6 +74,17 @@ public class App {
     AlbumService albumService = new AlbumService(ds, albumRepository);
     AlbumController albumController = new AlbumController(albumService);
 
+    // Artist related ressources
+    ArtistRepository artistRepository = new ArtistRepository();
+
+    // Group related ressources
+    GroupRepository groupRepository = new GroupRepository();
+
+    // Creator related ressources
+    CreatorRepository creatorRepository = new CreatorRepository();
+    CreatorService creatorService = new CreatorService(ds, creatorRepository, artistRepository, groupRepository);
+    CreatorController creatorController = new CreatorController(creatorService);
+
     // Access management
     // We check the required roles before accessing every routes
     app.beforeMatched(ctx -> {
@@ -112,6 +128,9 @@ public class App {
 
     // Album related routes
     app.get("/albums/{idMedia}", albumController::getAlbum, Role.OPEN, Role.LOGGED_IN);
+
+    // Creator related routes
+    app.get("/creators/{creatorName}", creatorController::getCreator, Role.OPEN, Role.LOGGED_IN);
 
     app.start(PORT);
   }
