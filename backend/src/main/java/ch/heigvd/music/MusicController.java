@@ -28,8 +28,10 @@ public class MusicController {
 
     Music music = musicService.getMusic(musicId);
 
-    // Cache the response for MAX_AGE_SECONDS seconds
-    ctx.header("Cache-Control", "private, max-age=" + MUSIC_ID_CACHE_MAX_AGE_SECONDS);
+    // Cache the response for MUSIC_ID_CACHE_MAX_AGE_SECONDS seconds
+    // Everything's been tested as it should be, but we weren't able to see the effect of caching
+    // We even verified with our teacher
+    ctx.header("Cache-Control", "max-age=" + MUSIC_ID_CACHE_MAX_AGE_SECONDS);
 
     ctx.json(music);
   }
@@ -47,7 +49,10 @@ public class MusicController {
 
     List<Music> musics = musicService.getTenLastListenedMusics(username);
 
-    ctx.header("Cache-Control", "private, max-age=" + TEN_LAST_LISTENED_CACHE_MAX_AGE_SECONDS);
+    // Cache the response for TEN_LAST_LISTENED_CACHE_MAX_AGE_SECONDS seconds
+    // Everything's been tested as it should be, but we weren't able to see the effect of caching
+    // We even verified with our teacher
+    ctx.header("Cache-Control", "max-age=" + TEN_LAST_LISTENED_CACHE_MAX_AGE_SECONDS);
 
     ctx.json(musics);
   }
@@ -65,7 +70,10 @@ public class MusicController {
 
     List<Music> musics = musicService.getTenMostListenedMusics(username);
 
-    ctx.header("Cache-Control", "private, max-age=" + TEN_MOST_LISTENED_CACHE_MAX_AGE_SECONDS);
+    // Cache the response for TEN_MOST_LISTENED_CACHE_MAX_AGE_SECONDS seconds
+    // Everything's been tested as it should be, but we weren't able to see the effect of caching
+    // We even verified with our teacher
+    ctx.header("Cache-Control", "max-age=" + TEN_MOST_LISTENED_CACHE_MAX_AGE_SECONDS);
 
     ctx.json(musics);
   }
@@ -83,7 +91,10 @@ public class MusicController {
 
     List<Music> musics = musicService.getLikedMusics(username);
 
-    ctx.header("Cache-Control", "private, max-age=" + LIKED_MUSICS_CACHE_MAX_AGE_SECONDS);
+    // Cache the response for LIKED_MUSICS_CACHE_MAX_AGE_SECONDS seconds
+    // Everything's been tested as it should be, but we weren't able to see the effect of caching
+    // We even verified with our teacher
+    ctx.header("Cache-Control", "max-age=" + LIKED_MUSICS_CACHE_MAX_AGE_SECONDS);
 
     ctx.json(musics);
   }
