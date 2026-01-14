@@ -11,6 +11,43 @@ import java.util.List;
 import ch.heigvd.entities.Music;
 
 public class MusicRepository {
+
+    /**
+    * Retrieves all musics from the database.
+    *
+    * @param conn the database connection
+    * @return a list of all Music objects
+    * @throws SQLException if a database access error occurs
+    */
+    public List<Music> getAll(Connection conn) throws SQLException {
+        String sql = """
+            SELECT  c.idchanson AS musicId, m.titre AS title, m.datedesortie AS releaseDate, c.duree AS duration, c.genre AS genre,
+              STRING_AGG(DISTINCT cm.nomcreateur, ', ' ORDER BY cm.nomcreateur) AS creatorNames
+            FROM spotish.chanson c
+            JOIN spotish.media m           ON m.idmedia = c.idchanson
+            JOIN spotish.createur_media cm ON cm.idmedia = c.idchanson
+            GROUP BY c.idchanson, m.titre, m.datedesortie, c.duree, c.genre;
+                            """;
+
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+          ResultSet rs = ps.executeQuery();
+
+          List<Music> musics = new ArrayList<>();
+          while (rs.next()) {
+            musics.add(new Music(
+                rs.getLong("musicId"),
+                rs.getString("title"),
+                rs.getObject("releaseDate", LocalDate.class),
+                rs.getInt("duration"),
+                rs.getString("genre"),
+                rs.getString("creatorNames")));
+          }
+          return musics;
+        }
+      }
+
+
+
   /**
    * Retrieves a music by its ID from the database.
    *
