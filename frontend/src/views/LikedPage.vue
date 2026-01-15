@@ -67,25 +67,34 @@ const formatDuration = (seconds) => {
       </div>
 
       <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-        <div v-for="music in likedMusics" :key="'music-' + (music.idMedia || music.musicId)" class="col">
+        <div v-for="music in likedMusics" :key="'music-' + music.musicId" class="col">
           <div class="card h-100 border-danger">
             <div class="card-header bg-light">
               <i class="bi bi-heart-fill text-danger"></i>
-              <strong>{{ music.titre || music.title }}</strong>
+              <strong>{{music.title}}</strong>
             </div>
             <div class="card-body">
               <p class="card-text text-muted mb-2">
                 <i class="bi bi-person"></i>
-                <strong>{{ music.nomCreateur || music.creatorNames }}</strong>
+                <strong>
+                  <template v-if="music.creatorNames">
+                    <template v-for="(creator, idx) in music.creatorNames.split(',')" :key="idx">
+                      <router-link :to="`/creators/${creator.trim()}`" class="text-decoration-none">
+                        {{ creator.trim() }}
+                      </router-link>
+                      <span v-if="idx < music.creatorNames.split(',').length - 1">, </span>
+                    </template>
+                  </template>
+                </strong>
               </p>
               <p class="card-text">
                 <small class="text-muted">
                   <i class="bi bi-music-note-beamed"></i>
                   {{ music.genre }}<br>
                   <i class="bi bi-clock"></i>
-                  {{ formatDuration(music.duree || music.duration) }}<br>
+                  {{ formatDuration(music.duration) }}<br>
                   <i class="bi bi-calendar"></i>
-                  {{ music.dateDeSortie || music.releaseDate }}
+                  {{music.releaseDate}}
                 </small>
               </p>
             </div>
