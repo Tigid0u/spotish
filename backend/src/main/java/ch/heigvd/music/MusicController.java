@@ -12,6 +12,18 @@ public class MusicController {
     this.musicService = musicService;
   }
 
+    /**
+     * Handles the HTTP GET request to retrieve all musics.
+     *
+     * @param ctx the Javalin HTTP context containing request and response data
+     */
+  public void getAll(Context ctx) {
+
+      List<Music> musics = musicService.getAllMusics();
+
+      ctx.json(musics);
+    }
+
   /**
    * Handles the HTTP GET request to retrieve a music by its ID.
    *

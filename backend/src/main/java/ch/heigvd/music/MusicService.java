@@ -18,6 +18,26 @@ public class MusicService {
     this.musicRepo = musicRepo;
   }
 
+    /**
+     * Retrieves all musics from the database.
+     *
+     * @return a list of all Music objects
+     * @throws NotFoundResponse if no musics are found in the database
+     */
+  public List<Music> getAllMusics() {
+      try (Connection conn = ds.getConnection()) {
+        List<Music> musics = musicRepo.getAll(conn);
+
+        if (musics == null || musics.isEmpty()) {
+          throw new NotFoundResponse("No musics found in the database");
+        }
+
+        return musics;
+      } catch (SQLException e) {
+        throw new RuntimeException(e);
+      }
+    }
+
   /**
    * Retrieves a music by its ID.
    *
