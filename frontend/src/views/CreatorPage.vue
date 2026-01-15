@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import creatorService from '../services/creatorService'
 
@@ -8,11 +8,13 @@ const creator = ref(null)
 const loading = ref(true)
 const error = ref('')
 
-const creatorName = route.params.name
+const loadCreator = async (name) => {
+  loading.value = true
+  error.value = ''
+  creator.value = null
 
-onMounted(async () => {
   try {
-    creator.value = await creatorService.getCreator(creatorName)
+    creator.value = await creatorService.getCreator(name)
   } catch (err) {
     if (err.status === 404) {
       error.value = 'Créateur non trouvé'
@@ -22,10 +24,39 @@ onMounted(async () => {
   } finally {
     loading.value = false
   }
+}
+
+onMounted(() => {
+  loadCreator(route.params.name)
 })
 
+// Important: le composant est réutilisé quand on navigue vers la même route
+// avec un paramètre différent. Sans watcher, la page ne se rafraîchit pas.
+watch(
+  () => route.params.name,
+  (newName, oldName) => {
+    if (!newName || newName === oldName) return
+    loadCreator(newName)
+  }
+)
+
 const isArtist = () => {
-  return creator.value && (!creator.value.artists || creator.value.artists.length === 0)
+  // Backend: un artiste a `artists = null`, un groupe a `artists = []` (ou une liste).
+  return !creator.value?.artists
+}
+
+const displayName = () => {
+  return creator.value?.creatorName || ''
+}
+
+const normalizeGroupArtists = () => {
+  const artists = creator.value?.artists
+  if (!Array.isArray(artists)) return []
+  // Backend actuel: `artists` est une liste de strings (noms d'artistes).
+  // On normalise en objets pour simplifier le template.
+  return artists
+    .filter((a) => a)
+    .map((artistName) => ({ artistName }))
 }
 
 const formatDuration = (seconds) => {
@@ -54,7 +85,7 @@ const formatDuration = (seconds) => {
       <div class="mb-4">
         <h1>
           <i :class="isArtist() ? 'bi bi-person-fill' : 'bi bi-people-fill'"></i>
-          {{ isArtist() ? creator.artistName : creator.groupName }}
+          {{ displayName() }}
         </h1>
         <p class="text-muted">
           <span v-if="isArtist()">
@@ -71,10 +102,10 @@ const formatDuration = (seconds) => {
         <div class="card-body">
           <h5 class="card-title">Informations</h5>
           <p class="card-text">
-            <strong>Prénom:</strong> {{ creator.fname }}<br>
-            <strong>Nom:</strong> {{ creator.lname }}<br>
-            <strong>Date de naissance:</strong> {{ creator.birthdate }}<br>
-            <strong>Email:</strong> {{ creator.email }}
+            <strong>Nom de scène:</strong> {{ creator.creatorName }}
+          </p>
+          <p class="text-muted mb-0">
+            Les informations détaillées (prénom/nom/date de naissance/email) ne sont pas disponibles dans l'API actuelle.
           </p>
         </div>
       </div>
@@ -85,19 +116,19 @@ const formatDuration = (seconds) => {
           <div class="card-body">
             <h5 class="card-title">Informations</h5>
             <p class="card-text">
-              <strong>Email:</strong> {{ creator.email }}
+              <strong>Nom du groupe:</strong> {{ creator.creatorName }}
             </p>
           </div>
         </div>
 
         <!-- Artistes du groupe -->
-        <div v-if="creator.artists && creator.artists.length > 0" class="card mb-3">
+        <div v-if="normalizeGroupArtists().length > 0" class="card mb-3">
           <div class="card-body">
             <h5 class="card-title">Artistes du groupe</h5>
             <ul class="list-group list-group-flush">
-              <li v-for="artist in creator.artists" :key="artist.artistName" class="list-group-item">
+              <li v-for="artist in normalizeGroupArtists()" :key="artist.artistName" class="list-group-item">
                 <router-link :to="`/creators/${artist.artistName}`" class="text-decoration-none">
-                  <i class="bi bi-person"></i> {{ artist.fname }} {{ artist.lname }} ({{ artist.artistName }})
+                  <i class="bi bi-person"></i> {{ artist.artistName }}
                 </router-link>
               </li>
             </ul>
