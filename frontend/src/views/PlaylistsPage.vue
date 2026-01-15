@@ -64,9 +64,8 @@ const submitCreate = async () => {
   savingCreate.value = true
   try {
     await playlistService.createPlaylist({
-      id: null,
       name: createForm.value.name,
-      decription: createForm.value.description || '',
+      description: createForm.value.description || '',
       musics: Array.from(createForm.value.selectedMusicIds).map(id => ({ musicId: id }))
     })
     message.value = 'Playlist créée'
