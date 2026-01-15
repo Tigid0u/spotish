@@ -21,18 +21,21 @@ public class PlaylistRepository {
    * @return the number of rows affected
    * @throws SQLException if a database access error occurs
    */
-  public int createPlaylist(Connection conn, Playlist playlist) throws SQLException {
+  public Long createPlaylist(Connection conn, Playlist playlist) throws SQLException {
     // Source used as reference for unnest function (+ some ChatGPT usage examples):
     // https://stackoverflow.com/questions/68136872/postgresql-join-unnest-output-with-cte-insert-id-insert-many-to-many
     String sql = """
         WITH new_playlist AS (
-                INSERT INTO spotish.playlist (nom, description, nomcreateur)
-                VALUES (?, ?, ?)
-                RETURNING idplaylist
-            )
-            INSERT INTO spotish.chanson_playlist (idchanson, idplaylist)
-            SELECT unnest(?::bigint[]), np.idplaylist
-            FROM new_playlist np;
+          INSERT INTO spotish.playlist (nom, description, nomcreateur)
+          VALUES (?, ?, ?)
+          RETURNING idplaylist
+        ),
+        insert_chansons AS (
+          INSERT INTO spotish.chanson_playlist (idchanson, idplaylist)
+          SELECT unnest(?::bigint[]), np.idplaylist
+          FROM new_playlist np
+        )
+        SELECT idplaylist AS playlistId FROM new_playlist;
             """;
 
     // Disable auto-commit mode to enable transaction management
@@ -52,10 +55,13 @@ public class PlaylistRepository {
       Array musicIdsArray = conn.createArrayOf("bigint", musicIds);
       ps.setArray(4, musicIdsArray);
 
-      int result = ps.executeUpdate();
+      ResultSet rs = ps.executeQuery();
       conn.commit();
 
-      return result;
+      if (rs.next()) {
+        return rs.getLong("playlistId");
+      }
+      return null;
     } catch (SQLException e) {
       // if exception, rollback changes
       conn.rollback();

@@ -2,7 +2,9 @@ package ch.heigvd;
 
 import javax.sql.DataSource;
 
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.javalin.Javalin;
 import io.javalin.http.Context;
@@ -38,7 +40,12 @@ public class App {
   public static final int PORT = 8080;
 
   public static void main(String[] args) {
-    Javalin app = Javalin.create();
+    Javalin app = Javalin.create(
+            config -> {
+              // This will alow us to parse the LocalDateTime
+              config.validation.register(LocalDateTime.class, LocalDateTime::parse);
+            }
+    );
 
     // handle general exceptions
     app.exception(Exception.class, (e, ctx) -> {
@@ -50,6 +57,12 @@ public class App {
 
     // Init a new DataSource pool using HikariCP
     DataSource ds = Db.createDataSource();
+
+    // This will serve as our cache
+    //
+    // The key is to identify the user(s)
+    // The value is the last modification time of the user(s)
+    ConcurrentHashMap<String, LocalDateTime> usersCache = new ConcurrentHashMap<>();
 
     // User related ressources
     UserRepository userRepository = new UserRepository();
@@ -67,7 +80,7 @@ public class App {
     // Playlist related ressources
     PlaylistRepository playlistRepository = new PlaylistRepository();
     PlaylistService playlistService = new PlaylistService(ds, playlistRepository, userRepository, musicRepository);
-    PlaylistController playlistController = new PlaylistController(playlistService);
+    PlaylistController playlistController = new PlaylistController(playlistService, usersCache);
 
     // Album related ressources
     AlbumRepository albumRepository = new AlbumRepository();
