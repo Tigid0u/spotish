@@ -8,6 +8,7 @@ import MusicsPage from '../views/MusicsPage.vue'
 import LikedPage from '../views/LikedPage.vue'
 import ProfilePage from '../views/ProfilePage.vue'
 import CreatorPage from '../views/CreatorPage.vue'
+import PlaylistsPage from '../views/PlaylistsPage.vue'
 
 const routes = [
   {
@@ -33,6 +34,11 @@ const routes = [
   {
     path: '/profile',
     component: ProfilePage,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/playlists',
+    component: PlaylistsPage,
     meta: { requiresAuth: true }
   },
   {

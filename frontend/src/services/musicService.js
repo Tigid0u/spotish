@@ -90,7 +90,21 @@ const musicService = {
       throw error;
     }
   },
+
+  /**
+   * Get all musics
+   * @returns {Promise<Array>}
+   */
+  async getAll() {
+    try {
+      return await apiRequest('/musics', { method: 'GET' }) || []
+    } catch (error) {
+      if (error.status === 404) {
+        return []
+      }
+      throw error
+    }
+  },
 };
 
 export default musicService;
-

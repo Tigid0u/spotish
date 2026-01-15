@@ -35,6 +35,11 @@ const handleLogout = async () => {
               <i class="bi bi-heart-fill"></i> Favoris
             </router-link>
           </li>
+          <li class="nav-item" v-if="loggedIn">
+            <router-link to="/playlists" class="nav-link">
+              <i class="bi bi-collection-music"></i> Playlists
+            </router-link>
+          </li>
         </ul>
 
         <ul class="navbar-nav">
@@ -58,4 +63,3 @@ const handleLogout = async () => {
     </div>
   </nav>
 </template>
-
