@@ -40,7 +40,7 @@ public class CreatorRepository {
             rs.getString("title"),
             rs.getObject("releaseDate", LocalDate.class),
             rs.getString("creatorName"),
-            null);
+            getMusicsOfAlbumOfCreator(conn, creatorName, rs.getLong("albumId")));
         albums.add(album);
       }
       return albums;
@@ -79,7 +79,7 @@ public class CreatorRepository {
             rs.getObject("releaseDate", LocalDate.class),
             rs.getInt("duration"),
             rs.getString("genre"),
-            rs.getString("creatorName"));
+            rs.getString("creatorNames"));
         musics.add(music);
       }
       return musics;

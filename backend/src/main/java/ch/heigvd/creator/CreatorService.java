@@ -35,13 +35,11 @@ public class CreatorService {
       // Check if the creator is an artist
       if (artistRepository.exists(conn, creatorName)) {
         Creator artist = artistRepository.getOne(conn, creatorName);
-        artist.setAlbums(creatorRepository.getAlbumsOfCreator(conn, creatorName));
-        return artist;
+        return artist.setAlbums(creatorRepository.getAlbumsOfCreator(conn, creatorName));
       } else if (groupRepository.exists(conn, creatorName)) {
         // Otherwise, check if the creator is a group
         Creator group = groupRepository.getOne(conn, creatorName);
-        group.setAlbums(creatorRepository.getAlbumsOfCreator(conn, creatorName));
-        return group;
+        return group.setAlbums(creatorRepository.getAlbumsOfCreator(conn, creatorName));
       } else {
         throw new NotFoundResponse("This creator does not exist");
       }
