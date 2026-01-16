@@ -1,7 +1,7 @@
 
 
 // Utiliser une URL relative pour laisser Vite gérer le proxy
-const API_BASE_URL = '';
+const API_BASE_URL = '/api';
 
 /**
  * Make API request with proper headers and credentials
