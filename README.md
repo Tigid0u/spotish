@@ -2,9 +2,9 @@
 
 Spotish is a music web application that allows users to search for songs, artists and create playlists. It is built using Java with Javalin for the backend and Vue.js for the frontend. The backend serves an API that the frontend consumes to provide a seamless user experience.
 
-This project is a practical work done in the context of the course "Développement d'applications web (DAI)" at HEIG-VD.
+This project is a practical work done in the context of the courses "Développement d'applications web (DAI)" and "Base de Données relationnelles (BDR)" at HEIG-VD.
 
-## Authors
+## Contributors
 
 Have contributed to this project:
 
@@ -34,7 +34,53 @@ However, endpoints to get all musics or get info about a specific music have lon
 
 If you wish to query the API directly, you must prefix your requests to all the endpoints with `/api`.
 
-See [usage examples]() for more details.
+See [usage examples](#usage-examples) for more details.
+
+## Project Structure
+
+The project is structured as follows:
+
+```
+├── backend
+│   ├── dependency-reduced-pom.xml
+│   ├── Dockerfile
+│   ├── pom.xml
+│   ├── src
+│   └── target
+├── frontend
+│   ├── Dockerfile
+│   ├── index.html
+│   ├── nginx.conf
+│   ├── node_modules
+│   ├── package.json
+│   ├── package-lock.json
+│   ├── README.md
+│   ├── src
+│   │   ├── App.vue
+│   │   ├── components
+│   │   ├── main.js
+│   │   ├── router
+│   │   ├── services
+│   │   └── views
+│   └── vite.config.js
+├── README.md
+├── spotishAPI.md
+├── sql_scripts
+│   └── init
+│       ├── 01_create_tables.sql
+│       ├── 02_triggers.sql
+│       └── 03_import.sql
+├── traefik-compose.yml
+├── db-compose.yml
+└── app-compose.yml
+```
+
+- `backend/`: Contains the Java backend code using Javalin framework.
+- `frontend/`: Contains the Vue.js frontend code as well as the Nginx configuration to serve it in production.
+- `sql_scripts/init/`: Contains SQL scripts to create the database schema, triggers, and import sample data. These scripts where imported from the BDR repository of the project. So they won't be in sync with potential future updates to that repository.
+- `db-compose.yml`: Docker Compose file to set up the PostgreSQL database.
+- `app-compose.yml`: Docker Compose file to set up the backend and frontend services.
+- `traefik-compose.yml`: Docker Compose file to set up the Traefik reverse
 
 ## Get started
 
@@ -271,7 +317,7 @@ To explore the API, you can use tools like **Postman** or **cURL**. Here we will
 ### Get a playlist by ID
 
 ```bash
-curl -i http://localhost:8080/api/playlists/21
+curl -i http://spotish.freeddns.org/api/playlists/21
 ```
 
 Where `21` is the ID of the playlist you want to retrieve. You can replace it with any valid playlist ID.
