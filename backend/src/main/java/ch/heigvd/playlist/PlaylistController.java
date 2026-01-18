@@ -187,7 +187,7 @@ public class PlaylistController {
     playlistService.followPlaylist(username, playlistId);
 
     // Invalidate the cache for all users
-    usersCache.remove(followedAllPlaylistsCacheKey(username)); // TODO: I don't have all usernames here to remove their cache
+    usersCache.remove(followedAllPlaylistsCacheKey(username));
 
     // 201 == Created
     ctx.status(201);
@@ -225,7 +225,7 @@ public class PlaylistController {
     usersCache.put(playlistCacheKey(playlistId), now);
 
     // Invalidate the cache for all users
-    usersCache.remove(allPlaylistsCacheKey(username)); // TODO: I don't have all usernames here to remove their cache
+    usersCache.remove(allPlaylistsCacheKey(username));
 
     // Add the last modification date to the response
     ctx.header("Last-Modified", String.valueOf(now));
@@ -266,7 +266,7 @@ public class PlaylistController {
     usersCache.put(playlistCacheKey(playlistId), now);
 
     // Invalidate the cache for all users
-    usersCache.remove(allPlaylistsCacheKey(username)); // TODO: I don't have all usernames here to remove their cache
+    usersCache.remove(allPlaylistsCacheKey(username));
 
     // Add the last modification date to the response
     ctx.header("Last-Modified", String.valueOf(now));
