@@ -129,9 +129,9 @@ const isLiked = (musicId) => {
         </div>
       </section>
 
-      <!-- Top 3 musiques -->
+      <!-- Top 10 musiques -->
       <section>
-        <h2 class="h4 mb-3"><i class="bi bi-trophy"></i> Top 3 Plus Écoutées</h2>
+        <h2 class="h4 mb-3"><i class="bi bi-trophy"></i> Top 10 Plus Écoutées</h2>
         <div v-if="mostListened.length === 0" class="alert alert-info">
           <i class="bi bi-info-circle"></i> Aucune statistique disponible
         </div>
