@@ -271,7 +271,7 @@ To explore the API, you can use tools like **Postman** or **cURL**. Here we will
 ### Get a playlist by ID
 
 ```bash
-curl -i http://localhost:8080/playlists/21
+curl -i http://localhost:8080/api/playlists/21
 ```
 
 Where `21` is the ID of the playlist you want to retrieve. You can replace it with any valid playlist ID.
@@ -291,7 +291,7 @@ Content-Length: 219
 ### Get all playlists from a Creator
 
 ```bash
-curl -i http://localhost:8080/playlists/user/amelie.paris
+curl -i http://localhost:8080/api/playlists/user/amelie.paris
 ```
 
 Where `amelie.paris` is the username of the creator whose playlists you want to retrieve. You can replace it with any valid username.
