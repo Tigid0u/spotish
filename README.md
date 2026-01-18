@@ -266,7 +266,7 @@ Then, you should be able to access the application using your domain name.
 
 ## Usage Examples
 
-To explore the API, you can use tools like **Postman** or \*\*cURL. Here we will give some examples using cURL.
+To explore the API, you can use tools like **Postman** or **cURL**. Here we will give some examples using cURL.
 
 ### Get a playlist by ID
 
