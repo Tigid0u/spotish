@@ -92,7 +92,7 @@ First, clone the repository:
 git clone git@github.com:Tigid0u/spotish.git
 ```
 
-### Edit you `/etc/hosts` file
+### Edit your `/etc/hosts` file
 
 To simulate a real domain name locally, you need to edit your `/etc/hosts` file to add the following line:
 
@@ -146,7 +146,7 @@ docker compose -f app-compose.yml up -d
 
 ### Traefik Reverse Proxy
 
-Even if testing locally, you must use the Traefik reverse proxy to access the application. However, just be aware that HTTPS won't while testing locally.
+Even if testing locally, you must use the Traefik reverse proxy to access the application. However, just be aware that HTTPS won't work while testing locally.
 
 To run Traefik, you can use the `traefik-compose.yml` file located in the root of the project.
 
@@ -268,6 +268,8 @@ After creating the DNS records, you can verify using `nslookup`:
 nslookup example.com
 ```
 
+---
+
 ### 5. Clone the project Repository
 
 Clone the Spotish repository on your VM:
@@ -276,9 +278,13 @@ Clone the Spotish repository on your VM:
 git clone https://github.com/Tigid0u/spotish.git
 ```
 
+---
+
 ### 6. Fill `.env` file with your configuration
 
 For the application to work you need to create a `.env` at the root of the project. For this you can copy the `.env.template` file, rename it to `.env` and fill it with your configuration (database credentials, etc.).
+
+---
 
 ### 7. Deploy the Application
 
@@ -310,6 +316,8 @@ docker compose -f traefik-compose.yml up -d
 
 Then, you should be able to access the application using your domain name.
 
+---
+
 ## Usage Examples
 
 To explore the API, you can use tools like **Postman** or **cURL**. Here we will give some examples using cURL.
@@ -317,10 +325,10 @@ To explore the API, you can use tools like **Postman** or **cURL**. Here we will
 ### Get a playlist by ID
 
 ```bash
-curl -i http://spotish.freeddns.org/api/playlists/21
+curl -i https://spotish.freeddns.org/api/playlists/1
 ```
 
-Where `21` is the ID of the playlist you want to retrieve. You can replace it with any valid playlist ID.
+Where `1` is the ID of the playlist you want to retrieve. You can replace it with any valid playlist ID.
 
 You should receive a response similar to this:
 
@@ -337,7 +345,7 @@ Content-Length: 219
 ### Get all playlists from a Creator
 
 ```bash
-curl -i http://localhost:8080/api/playlists/user/amelie.paris
+curl -i https://localhost:8080/api/playlists/user/amelie.paris
 ```
 
 Where `amelie.paris` is the username of the creator whose playlists you want to retrieve. You can replace it with any valid username.
