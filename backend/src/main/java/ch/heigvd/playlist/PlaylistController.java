@@ -275,47 +275,10 @@ public class PlaylistController {
     ctx.status(204);
   }
 
-  /**
-   * Cache key for creator-based playlists.
-   * @param creatorName the name of the creator
-   * @return the cache key
-   */
-  private String creatorCacheKey(String creatorName) {
-    return "creator:" + creatorName;
-  }
-
-  /**
-   * Cache key for followed playlists.
-   * @param username the username of the follower
-   * @return the cache key
-   */
-  private String followedCacheKey(String username) {
-    return "followed:" + username;
-  }
-
   private String playlistCacheKey(Long playlistId) {
     return "playlist:" + playlistId;
   }
 
-  /**
-   * Cache key for music in a playlist owned by a user.
-   * @param username the username of the owner
-   * @param playlistId the ID of the playlist
-   * @param musicId the ID of the music
-   * @return the cache key
-   */
-  private String musicCacheKey(String username, Long playlistId, Long musicId) {
-    return "music:" + username + ":" + playlistId + ":" + musicId;
-  }
-
-  /**
-   * Cache key for title-based playlists.
-   * @param title the title of the playlist
-   * @return the cache key
-   */
-  private String titleCacheKey(String title) {
-    return "title:" + title;
-  }
 
   /**
    * Cache key for all playlists.
