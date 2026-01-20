@@ -47,15 +47,14 @@
   gap: 1rem;
 }
 ;background-color:#fff;background-image:url('https://marp.app/assets/hero-background.svg');background-position:center;background-repeat:no-repeat;background-size:cover;" data-marpit-pagination-total="11">
-<h1 id="api"><strong>API</strong></h1>
+<h1 id="api---overview"><strong>API - Overview</strong></h1>
+<p>The API endpoints serve the following endpoints:</p>
 <ul>
-<li><code>/users</code>
-<ul>
-<li><code>POST /users</code> : Create a new user</li>
-<li><code>GET /users/{username}</code> : Get user info</li>
-<li><code>GET /users</code> : Get all users</li>
-</ul>
-</li>
+<li>user</li>
+<li>creator (artist / group)</li>
+<li>album</li>
+<li>music</li>
+<li>playlist</li>
 </ul>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="4" data-paginate="true" data-background-color="#fff" data-background-image="url('https://marp.app/assets/hero-background.svg')" data-theme="gaia" data-style=".columns {
@@ -69,19 +68,12 @@
   gap: 1rem;
 }
 ;background-color:#fff;background-image:url('https://marp.app/assets/hero-background.svg');background-position:center;background-repeat:no-repeat;background-size:cover;" data-marpit-pagination-total="11">
-<h1 id="api-1"><strong>API</strong></h1>
+<h1 id="api---structure"><strong>API - Structure</strong></h1>
+<p>The backend has 3 &quot;layers&quot;:</p>
 <ul>
-<li><code>/musics</code>
-<ul>
-<li><code>GET /musics/last-listened</code> : Get last listened musics</li>
-<li><code>GET /musics/most-listened</code> : Get most listened musics</li>
-<li><code>GET /musics/{idMedia}</code> : Get music info by id</li>
-<li><code>GET /musics/{title}</code> : Get music info by title</li>
-<li><code>GET /musics</code> : Get all musics</li>
-<li><code>GET /musics/liked</code> : Get all liked musics from current user</li>
-<li><code>POST /musics/liked/{idMedia}</code> : Like a music for current user</li>
-</ul>
-</li>
+<li><strong>Controller</strong>: handles the HTTP request</li>
+<li><strong>Service</strong>: handles app logic</li>
+<li><strong>Repository</strong>: handles DB queries</li>
 </ul>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="5" data-paginate="true" data-background-color="#fff" data-background-image="url('https://marp.app/assets/hero-background.svg')" data-theme="gaia" data-style=".columns {
@@ -95,17 +87,11 @@
   gap: 1rem;
 }
 ;background-color:#fff;background-image:url('https://marp.app/assets/hero-background.svg');background-position:center;background-repeat:no-repeat;background-size:cover;" data-marpit-pagination-total="11">
-<h1 id="api-2"><strong>API</strong></h1>
-<ul>
-<li><code>/playlists</code>
-<ul>
-<li><code>POST /playlists</code> : Create a new playlist</li>
-<li><code>GET /playlists/{idPlaylist}</code> : Get playlist info by id</li>
-<li><code>GET /playlists/user/{username}</code> : Get all playlists from a user</li>
-<li><code>GET /playlists/followed</code> : Get all followed playlists from current user</li>
-</ul>
-</li>
-</ul>
+<h1 id="api---implementation"><strong>API - Implementation</strong></h1>
+<p>Let's quickly take a look to the implementation of the route <code>GET /musics/{idMedia}</code>:</p>
+<p>Declaration of the route in the entrypoint (<code>App.java</code>):</p>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-java">app.get(<span class="hljs-string">&quot;/musics/{idMedia}&quot;</span>, musicController::getOne, Role.OPEN, Role.LOGGED_IN);
+</code></pre>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="6" data-paginate="true" data-background-color="#fff" data-background-image="url('https://marp.app/assets/hero-background.svg')" data-theme="gaia" data-style=".columns {
   display: grid;
@@ -118,16 +104,19 @@
   gap: 1rem;
 }
 ;background-color:#fff;background-image:url('https://marp.app/assets/hero-background.svg');background-position:center;background-repeat:no-repeat;background-size:cover;" data-marpit-pagination-total="11">
-<h1 id="api-3"><strong>API</strong></h1>
-<ul>
-<li><code>/playlists</code> (contd.)
-<ul>
-<li><code>POST /playlists/followed/{idPlaylist}</code> : Follow a playlist for current user</li>
-<li><code>POST /playlists/{idPlaylist}/musics/{idMedia}</code> : Add a music to a playlist</li>
-<li><code>DELETE /playlists/{idPlaylist}/musics/{idMedia}</code> : Remove a music from a playlist</li>
-</ul>
-</li>
-</ul>
+<h1 id="api---implementation-1"><strong>API - Implementation</strong></h1>
+<p>Music controller (<code>musicController.java</code>):</p>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-java">  <span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title function_">getOne</span><span class="hljs-params">(Context ctx)</span> {
+    <span class="hljs-type">Long</span> <span class="hljs-variable">musicId</span> <span class="hljs-operator">=</span> ctx.pathParamAsClass(<span class="hljs-string">&quot;idMedia&quot;</span>, Long.class).check(id -&gt; id &gt;= <span class="hljs-number">0</span>, <span class="hljs-string">&quot;idMedia must be positive&quot;</span>).get();
+
+    <span class="hljs-type">Music</span> <span class="hljs-variable">music</span> <span class="hljs-operator">=</span> musicService.getMusic(musicId);
+
+    <span class="hljs-comment">// Cache the response for MUSIC_ID_CACHE_MAX_AGE_SECONDS seconds</span>
+    ctx.header(<span class="hljs-string">&quot;Cache-Control&quot;</span>, <span class="hljs-string">&quot;max-age=&quot;</span> + MUSIC_ID_CACHE_MAX_AGE_SECONDS);
+
+    ctx.json(music);
+  }
+</code></pre>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="7" data-paginate="true" data-background-color="#fff" data-background-image="url('https://marp.app/assets/hero-background.svg')" data-theme="gaia" data-style=".columns {
   display: grid;
@@ -140,25 +129,20 @@
   gap: 1rem;
 }
 ;background-color:#fff;background-image:url('https://marp.app/assets/hero-background.svg');background-position:center;background-repeat:no-repeat;background-size:cover;" data-marpit-pagination-total="11">
-<h1 id="api-4"><strong>API</strong></h1>
-<ul>
-<li><code>/creators</code>
-<ul>
-<li><code>GET /creators/{creatorName}</code> : Get creator info by name</li>
-</ul>
-</li>
-<li><code>/albums</code>
-<ul>
-<li><code>GET /albums/{idMedia}</code> : Get album info by id</li>
-</ul>
-</li>
-<li><code>/login</code>
-<ul>
-<li><code>POST /login/{username}</code> : Login a user</li>
-<li><code>POST /logout</code> : Logout the current user</li>
-</ul>
-</li>
-</ul>
+<h1 id="api---implementation-2"><strong>API - Implementation</strong></h1>
+<p>Music service (<code>musicService.java</code>):</p>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-java">  <span class="hljs-keyword">public</span> Music <span class="hljs-title function_">getMusic</span><span class="hljs-params">(Long musicId)</span> {
+    <span class="hljs-keyword">try</span> (<span class="hljs-type">Connection</span> <span class="hljs-variable">conn</span> <span class="hljs-operator">=</span> ds.getConnection()) {
+      <span class="hljs-type">Music</span> <span class="hljs-variable">music</span> <span class="hljs-operator">=</span> musicRepo.getOne(conn, musicId);
+
+      <span class="hljs-keyword">if</span> (music == <span class="hljs-literal">null</span>) {
+        <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-title class_">NotFoundResponse</span>(<span class="hljs-string">&quot;Music with id \&quot;&quot;</span> + musicId + <span class="hljs-string">&quot;\&quot; not found&quot;</span>);
+      }
+
+      <span class="hljs-keyword">return</span> music;
+      <span class="hljs-comment">// [...]</span>
+  }
+</code></pre>
 </section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="8" data-paginate="true" data-background-color="#fff" data-background-image="url('https://marp.app/assets/hero-background.svg')" data-theme="gaia" data-style=".columns {
   display: grid;
@@ -166,6 +150,36 @@
   gap: 1rem;
 }
 " lang="POSIX" data-marpit-pagination="8" style="--paginate:true;--background-color:#fff;--background-image:url('https://marp.app/assets/hero-background.svg');--theme:gaia;--style:.columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+;background-color:#fff;background-image:url('https://marp.app/assets/hero-background.svg');background-position:center;background-repeat:no-repeat;background-size:cover;" data-marpit-pagination-total="11">
+<h1 id="api---implementation-3"><strong>API - Implementation</strong></h1>
+<p>Music respository (<code>musicRepository.java</code>):</p>
+<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-java">  <span class="hljs-keyword">public</span> Music <span class="hljs-title function_">getOne</span><span class="hljs-params">(Connection conn, Long musicId)</span> <span class="hljs-keyword">throws</span> SQLException {
+    <span class="hljs-type">String</span> <span class="hljs-variable">sql</span> <span class="hljs-operator">=</span> <span class="hljs-comment">/* SQL Query*/</span>;
+    <span class="hljs-keyword">try</span> (<span class="hljs-type">PreparedStatement</span> <span class="hljs-variable">ps</span> <span class="hljs-operator">=</span> conn.prepareStatement(sql)) {
+      ps.setLong(<span class="hljs-number">1</span>, musicId);
+      <span class="hljs-type">ResultSet</span> <span class="hljs-variable">rs</span> <span class="hljs-operator">=</span> ps.executeQuery();
+      <span class="hljs-type">Music</span> <span class="hljs-variable">music</span> <span class="hljs-operator">=</span> <span class="hljs-literal">null</span>;
+
+      <span class="hljs-comment">// Retrieve query results</span>
+      <span class="hljs-keyword">if</span> (rs.next()) {
+        music = <span class="hljs-keyword">new</span> <span class="hljs-title class_">Music</span>(rs.getLong(<span class="hljs-string">&quot;musicId&quot;</span>), rs.getString(<span class="hljs-string">&quot;title&quot;</span>), rs.getObject(<span class="hljs-string">&quot;releaseDate&quot;</span>, LocalDate.class),
+          rs.getInt(<span class="hljs-string">&quot;duration&quot;</span>), rs.getString(<span class="hljs-string">&quot;genre&quot;</span>), rs.getString(<span class="hljs-string">&quot;creatorNames&quot;</span>));
+      }
+      <span class="hljs-keyword">return</span> music;
+    }
+  }
+</code></pre>
+</section>
+</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="9" data-paginate="true" data-background-color="#fff" data-background-image="url('https://marp.app/assets/hero-background.svg')" data-theme="gaia" data-style=".columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+" lang="POSIX" data-marpit-pagination="9" style="--paginate:true;--background-color:#fff;--background-image:url('https://marp.app/assets/hero-background.svg');--theme:gaia;--style:.columns {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
@@ -182,30 +196,6 @@
 ctx.header(<span class="hljs-string">&quot;Cache-Control&quot;</span>, <span class="hljs-string">&quot;max-age=&quot;</span> + ALL_MUSICS_CACHE_MAX_AGE_SECONDS);
 </code></pre>
 </section>
-</foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="9" data-paginate="true" data-background-color="#fff" data-background-image="url('https://marp.app/assets/hero-background.svg')" data-theme="gaia" data-style=".columns {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-}
-" lang="POSIX" data-marpit-pagination="9" style="--paginate:true;--background-color:#fff;--background-image:url('https://marp.app/assets/hero-background.svg');--theme:gaia;--style:.columns {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1rem;
-}
-;background-color:#fff;background-image:url('https://marp.app/assets/hero-background.svg');background-position:center;background-repeat:no-repeat;background-size:cover;" data-marpit-pagination-total="11">
-<h1 id="cache---validation-model"><strong>Cache - Validation model</strong></h1>
-<pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-java"><span class="hljs-keyword">private</span> <span class="hljs-keyword">final</span> ConcurrentMap&lt;String, LocalDateTime&gt; usersCache;
-
-<span class="hljs-comment">// Example usage for updating the cache when a playlist is created</span>
-
-<span class="hljs-comment">// Store the last modification date of the user</span>
-<span class="hljs-type">LocalDateTime</span> <span class="hljs-variable">now</span> <span class="hljs-operator">=</span> LocalDateTime.now();
-usersCache.put(playlistCacheKey(playlistId), now);
-
-<span class="hljs-comment">// Invalidate the cache for all users</span>
-usersCache.remove(allPlaylistsCacheKey(ctx.cookie(<span class="hljs-string">&quot;userNameCookie&quot;</span>)));
-</code></pre>
-</section>
 </foreignObject></svg><svg data-marpit-svg="" viewBox="0 0 1280 720"><foreignObject width="1280" height="720"><section id="10" data-paginate="true" data-background-color="#fff" data-background-image="url('https://marp.app/assets/hero-background.svg')" data-theme="gaia" data-style=".columns {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -217,7 +207,7 @@ usersCache.remove(allPlaylistsCacheKey(ctx.cookie(<span class="hljs-string">&quo
   gap: 1rem;
 }
 ;background-color:#fff;background-image:url('https://marp.app/assets/hero-background.svg');background-position:center;background-repeat:no-repeat;background-size:cover;" data-marpit-pagination-total="11">
-<h1 id="cache---validation-model-contd"><strong>Cache - Validation model (contd.)</strong></h1>
+<h1 id="cache---validation-model"><strong>Cache - Validation model</strong></h1>
 <pre is="marp-pre" data-auto-scaling="downscale-only"><code class="language-java"><span class="hljs-comment">// Get the last known modification date of the user</span>
 <span class="hljs-type">LocalDateTime</span> <span class="hljs-variable">lastKnownModification</span> <span class="hljs-operator">=</span> ctx.headerAsClass(<span class="hljs-string">&quot;If-Modified-Since&quot;</span>, LocalDateTime.class).getOrDefault(<span class="hljs-literal">null</span>);
 
