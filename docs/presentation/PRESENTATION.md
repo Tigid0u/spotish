@@ -140,23 +140,6 @@ ctx.header("Cache-Control", "max-age=" + ALL_MUSICS_CACHE_MAX_AGE_SECONDS);
 # **Cache - Validation model**
 
 ```java
-private final ConcurrentMap<String, LocalDateTime> usersCache;
-
-// Example usage for updating the cache when a playlist is created
-
-// Store the last modification date of the user
-LocalDateTime now = LocalDateTime.now();
-usersCache.put(playlistCacheKey(playlistId), now);
-
-// Invalidate the cache for all users
-usersCache.remove(allPlaylistsCacheKey(ctx.cookie("userNameCookie")));
-```
-
----
-
-# **Cache - Validation model (contd.)**
-
-```java
 // Get the last known modification date of the user
 LocalDateTime lastKnownModification = ctx.headerAsClass("If-Modified-Since", LocalDateTime.class).getOrDefault(null);
 
